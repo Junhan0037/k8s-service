@@ -29,7 +29,7 @@
 
 ### 4) 구현 순서(로컬 기준 단계별)
 1. 프로젝트 스캐폴딩
-   - 모노레포 루트 Gradle/Maven 초기화, 자바 11 표준 설정, 공통 Checkstyle/Spotless 도입
+   - 모노레포 루트 Gradle/Maven 초기화, 자바 17 표준 설정, 공통 Checkstyle/Spotless 도입
    - `platform/common-lib`에 공통 의존성 BOM, Logback, Micrometer, Sleuth/Brave, Resilience4j 설정
 2. 로컬 인프라 도커 컴포즈
    - `platform/docker/docker-compose.yml` 작성: `kafka`, `zookeeper`, `redis`, `postgres`, `elasticsearch`, `zipkin`, `prometheus`, `grafana`
@@ -134,6 +134,6 @@
 - 카나리/블루그린 배포 전략의 로컬 시뮬레이션 파이프라인 마련
 
 ### 10) 참고
-- 기술 스택: Java 11, Spring Boot, Kafka, Redis, Docker, Elasticsearch, PostgreSQL, Resilience4j, Micrometer, Zipkin, Prometheus, Grafana
+- 기술 스택: Java 17, Spring Boot, Kafka, Redis, Docker, Elasticsearch, PostgreSQL, Resilience4j, Micrometer, Zipkin, Prometheus, Grafana
 - 보안: JWT, 내부 시크릿 헤더, 개인정보 마스킹/로깅 정책
 
