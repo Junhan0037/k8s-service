@@ -1,0 +1,64 @@
+# 사용자 포털 서비스는 세션 관리를 위해 Redis 환경변수를 사용합니다.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-portal
+  labels:
+    app.kubernetes.io/component: service
+    app.kubernetes.io/name: user-portal
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: user-portal
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-portal
+  labels:
+    app.kubernetes.io/component: service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: user-portal
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: user-portal
+        app.kubernetes.io/component: service
+    spec:
+      containers:
+        - name: user-portal
+          image: researchex/user-portal:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: researchex-common-config
+            - secretRef:
+                name: researchex-postgres-secret
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"

@@ -1,0 +1,10 @@
+apiVersion: 1
+
+# Grafana에서 기본 Prometheus 데이터 소스를 자동으로 등록한다.
+datasources:
+  - name: ResearchEx Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true

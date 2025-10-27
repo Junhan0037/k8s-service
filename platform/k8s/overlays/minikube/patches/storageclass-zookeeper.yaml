@@ -1,0 +1,11 @@
+# Zookeeper 상태 저장 볼륨에 StorageClass를 지정합니다.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: standard

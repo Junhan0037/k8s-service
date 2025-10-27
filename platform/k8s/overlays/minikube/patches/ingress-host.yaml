@@ -1,0 +1,11 @@
+# Minikube 환경에서 사용할 Ingress 호스트와 타임아웃을 조정합니다.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: researchex-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+spec:
+  rules:
+    - host: researchex.local

@@ -1,0 +1,11 @@
+# Minikube 기본 StorageClass를 명시해 PVC 바인딩을 보장합니다.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        storageClassName: standard

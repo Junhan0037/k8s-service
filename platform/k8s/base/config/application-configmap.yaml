@@ -1,0 +1,14 @@
+# 애플리케이션 공통 환경변수를 관리하는 ConfigMap입니다.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: researchex-common-config
+data:
+  SPRING_PROFILES_ACTIVE: "minikube"
+  POSTGRES_HOST: "postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "researchex"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  ZIPKIN_ENDPOINT: "http://zipkin:9411"

@@ -1,0 +1,167 @@
+# syntax=docker/dockerfile:1
+
+# ResearchEx 로컬 개발 환경을 구성하기 위한 Docker Compose 정의
+# - 학습 및 기능 검증에 필요한 필수 인프라(Kafka, Redis, PostgreSQL 등)를 한 번에 기동한다.
+# - 각 서비스는 단일 브릿지 네트워크(researchex-net)를 공유하여 로컬 통신을 단순화한다.
+version: "3.9"
+
+services:
+  # ZooKeeper는 분산 시스템의 ‘중앙 관리자’로, 여러 서버가 리더 선출·상태 동기화·설정 공유를 질서 있게 수행하도록 도와주는 조정자 시스템
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1 # Kafka와 동일한 Confluent 배포판을 사용해 버전 호환성을 확보한다
+    container_name: researchex-zookeeper
+    restart: unless-stopped
+    environment:
+      # 단일 노드 구성에 필요한 최소 속성만 지정한다.
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data # Confluent 이미지의 기본 데이터 경로에 맞춰 재매핑한다
+    networks:
+      - researchex-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1 # 기존 Bitnami 대신 Confluent 공식 이미지를 사용해 유지보수를 단순화한다
+    container_name: researchex-kafka
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    environment:
+      # 외부(호스트)와 내부 Docker 네트워크 모두에서 접근할 수 있도록 리스너를 2종 구성한다.
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
+      - KAFKA_NUM_PARTITIONS=3
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+    ports:
+      - "29092:29092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data # Confluent 이미지는 기본 데이터 경로가 /var/lib/kafka/data다
+    networks:
+      - researchex-net
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.6.1 # 토픽 초기화 컨테이너 역시 동일 이미지로 맞춰 유틸리티 버전을 일치시킨다
+    container_name: researchex-kafka-init
+    restart: "no"
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/bash", "/init/kafka/create-topics.sh"]
+    environment:
+      # 토픽 생성 스크립트가 바라볼 Kafka 브로커 주소
+      - BOOTSTRAP_SERVERS=kafka:9092
+    volumes:
+      - ./init:/init:ro
+    networks:
+      - researchex-net
+
+  redis:
+    image: redis:7.2.4-alpine
+    container_name: researchex-redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - researchex-net
+
+  postgres:
+    image: postgres:16
+    container_name: researchex-postgres
+    restart: unless-stopped
+    environment:
+      # 기본 사용자/DB는 로컬 개발에만 사용하는 계정으로 분리한다.
+      - POSTGRES_USER=researchex
+      - POSTGRES_PASSWORD=researchex
+      - POSTGRES_DB=researchex
+    ports:
+      - "5432:5432"
+    volumes:
+      # 초기 스키마 및 시드 데이터를 자동으로 적용한다.
+      - ./init/postgres:/docker-entrypoint-initdb.d:ro
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - researchex-net
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+    container_name: researchex-elasticsearch
+    restart: unless-stopped
+    environment:
+      # 단일 노드 모드로 기동하여 최소한의 리소스로 운영한다.
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks:
+      - researchex-net
+
+  # MSA 환경에서 요청 하나가 여러 서비스를 거칠 때, 그 흐름(Trace)을 추적해 어느 구간이 느린지 시각적으로 보여주는 분산 트레이싱 시스템
+  zipkin:
+    image: openzipkin/zipkin:2.24
+    container_name: researchex-zipkin
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    networks:
+      - researchex-net
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: researchex-prometheus
+    restart: unless-stopped
+    command:
+      # 커스텀 구성 경로를 명시적으로 지정한다.
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - researchex-net
+
+  grafana:
+    image: grafana/grafana:10.4.3
+    container_name: researchex-grafana
+    restart: unless-stopped
+    environment:
+      # 기본 관리자 계정은 학습용으로만 사용하며, 실서비스 시에는 반드시 변경해야 한다.
+      - GF_SECURITY_ADMIN_USER=researchex
+      - GF_SECURITY_ADMIN_PASSWORD=researchex
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - researchex-net
+
+volumes:
+  zookeeper-data:
+  kafka-data:
+  redis-data:
+  postgres-data:
+  es-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  researchex-net:
+    driver: bridge

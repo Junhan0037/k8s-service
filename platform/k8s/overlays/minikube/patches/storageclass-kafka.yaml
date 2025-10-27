@@ -1,0 +1,11 @@
+# Kafka 데이터 저장소를 Minikube 기본 스토리지에 바인딩합니다.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        storageClassName: standard

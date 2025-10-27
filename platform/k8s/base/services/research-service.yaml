@@ -1,0 +1,64 @@
+# 연구 검색 마이크로서비스 Deployment와 Service를 정의합니다.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: research-service
+  labels:
+    app.kubernetes.io/component: service
+    app.kubernetes.io/name: research-service
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: research-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: research-service
+  labels:
+    app.kubernetes.io/component: service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: research-service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: research-service
+        app.kubernetes.io/component: service
+    spec:
+      containers:
+        - name: research-service
+          image: researchex/research-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: researchex-common-config
+            - secretRef:
+                name: researchex-postgres-secret
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"

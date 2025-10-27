@@ -1,0 +1,81 @@
+# API Gateway를 구성하는 Nginx 설정입니다.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-nginx-config
+data:
+  nginx.conf: |
+    # 단일 Nginx 인스턴스에서 서비스별 프록시를 정의합니다.
+    events {
+      worker_connections 1024;
+    }
+
+    http {
+      include       /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+      sendfile      on;
+      keepalive_timeout  65;
+
+      # JWT 기반 인증 모듈 연결 대비 헤더 전달을 통일합니다.
+      proxy_set_header X-Trace-Id $http_x_trace_id;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header Host $host;
+
+      upstream research_service {
+        server research-service:8080;
+      }
+
+      upstream registry_service {
+        server registry-service:8080;
+      }
+
+      upstream mr_viewer_service {
+        server mr-viewer-service:8080;
+      }
+
+      upstream deid_service {
+        server deid-service:8080;
+      }
+
+      upstream user_portal {
+        server user-portal:8080;
+      }
+
+      upstream cdw_loader {
+        server cdw-loader:8080;
+      }
+
+      server {
+        listen 8080;
+        server_name  _;
+
+        location /api/research/ {
+          proxy_pass http://research_service/;
+        }
+
+        location /api/registry/ {
+          proxy_pass http://registry_service/;
+        }
+
+        location /api/mr-viewer/ {
+          proxy_pass http://mr_viewer_service/;
+        }
+
+        location /api/deid/ {
+          proxy_pass http://deid_service/;
+        }
+
+        location /api/user/ {
+          proxy_pass http://user_portal/;
+        }
+
+        location /api/cdw-loader/ {
+          proxy_pass http://cdw_loader/;
+        }
+
+        location /healthz {
+          return 200 'ok';
+        }
+      }
+    }
