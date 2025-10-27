@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+    <!--
+      ResearchEx 공통 로그 구성:
+      - JSON 로그는 prod/profile에 맞추어 logstash 인코더를 사용한다.
+      - 로컬 개발자가 콘솔에서 쉽게 디버깅할 수 있도록 pattern 기반 appender도 병행한다.
+    -->
+
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n"/>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="JsonConsole" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!-- TraceId와 SpanId를 기본 필드로 출력하여 관측성 연계를 돕는다. -->
+            <customFields>{"service":"common-lib","app":"ResearchEx"}</customFields>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.apache.kafka" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="Console"/>
+        <appender-ref ref="JsonConsole"/>
+    </root>
+</configuration>

@@ -1,0 +1,41 @@
+# ------------------------------
+# 공통 개발 환경에서 생성되는 임시 파일을 Git 추적 대상에서 제외한다.
+# ------------------------------
+
+# 운영체제별 캐시 파일
+.DS_Store
+Thumbs.db
+
+# IDE 및 에디터 환경 파일
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Gradle 빌드 캐시와 산출물
+.gradle/
+build/
+**/build/
+gradle-app.setting
+
+# 로그, 덤프, 임시 스크립트 출력
+logs/
+*.log
+*.tmp
+*.swp
+*.orig
+
+# 로컬 환경 변수 및 비공개 설정
+.env
+.env.*
+!*.example
+
+# Docker 및 컨테이너 관련 임시 파일
+platform/docker/*.pid
+platform/docker/.env.local
+
+# 기타 툴에서 생성하는 백업 파일
+*.bak
+*.backup
+*.old

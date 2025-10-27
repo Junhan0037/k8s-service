@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suppressions PUBLIC "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!-- 초기 단계에서는 특정 규칙 예외가 필요 없으므로 빈 구조만 유지한다. -->
+<suppressions>
+</suppressions>

@@ -1,12 +1,12 @@
 ## ResearchEx 구현 가이드 (Local 전용)
 
 ### 1) 목표와 범위
-- 목표: `resume.md`의 ResearchEx(멀티테넌트 MSA 기반 임상 데이터 연구 플랫폼)를 로컬 환경에서 재현 가능한 수준으로 구현·검증한다.
+- 목표: ResearchEx(멀티테넌트 MSA 기반 임상 데이터 연구 플랫폼)를 로컬 환경에서 재현 가능한 수준으로 구현·검증한다.
 - 범위: 코어 마이크로서비스 6종, 이벤트 드리븐 기반 메시징, API Gateway, 인증/인가, 캐싱/세션, 관측성(로그·메트릭·트레이싱), 기본 데이터 계층을 로컬에서 구동한다.
 - 비범위: 퍼블릭 클라우드 관리형 서비스(EKS/HPA 등), 수십만 동시 사용자 부하 테스트, 병원별 멀티 테넌트 운영 자동화.
 
 ### 2) 로컬 아키텍처 개요
-- 서비스: Research(연구검색), Registry(레지스트리), MR Viewer(의무기록뷰어), De-identification(가명화), User Portal(사용자 포털), CDW Loader(데이터 적재)
+- 서비스: Research(연구검색), Registry(레지스트리), MR Viewer(의무기록뷰어), De-identification(가명화), User Portal(사용자 포털), CDW Loader(데이터 적재) 는 학습용으로 간단하게 구현
 - 게이트웨이/보안: Nginx(또는 Spring Cloud Gateway) + JWT, 내부 API 보호(`X-Internal-Secret`)
 - 메시징: Kafka(+Zookeeper)
 - 데이터: PostgreSQL(OLTP), Elasticsearch(검색), Redis(Cache/Session)
@@ -14,7 +14,7 @@
 - 컨테이너 오케스트레이션: Docker Compose(단일 브릿지 네트워크)
 
 ### 3) 디렉터리 구조 제안(모노레포)
-- `gateway/` API Gateway(Nginx 또는 SCG)
+- `gateway/` API Gateway(Nginx)
 - `services/`
   - `research-service/` 검색/질의 처리
   - `registry-service/` 레지스트리 관리
@@ -29,7 +29,7 @@
 
 ### 4) 구현 순서(로컬 기준 단계별)
 1. 프로젝트 스캐폴딩
-   - 모노레포 루트 Gradle/Maven 초기화, 자바 17 표준 설정, 공통 Checkstyle/Spotless 도입
+   - 모노레포 루트 Gradle 초기화, 자바 17 표준 설정, 공통 Checkstyle/Spotless 도입
    - `platform/common-lib`에 공통 의존성 BOM, Logback, Micrometer, Sleuth/Brave, Resilience4j 설정
 2. 로컬 인프라 도커 컴포즈
    - `platform/docker/docker-compose.yml` 작성: `kafka`, `zookeeper`, `redis`, `postgres`, `elasticsearch`, `zipkin`, `prometheus`, `grafana`

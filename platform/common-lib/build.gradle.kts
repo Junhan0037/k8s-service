@@ -1,0 +1,34 @@
+plugins {
+    // 공통 라이브러리 모듈은 다른 서비스에서 바로 의존하도록 Java Library 플러그인을 사용한다.
+    `java-library`
+    // BOM 기반 버전 관리를 위해 Spring Dependency Management 플러그인을 적용한다.
+    id("io.spring.dependency-management")
+}
+
+description = "ResearchEx 공통 라이브러리 (로그/관측성/회복탄력성)"
+
+dependencies {
+    // Spring Boot BOM을 먼저 불러와 핵심 스타터 의존성 버전을 일관되게 맞춘다.
+    api(platform("org.springframework.boot:spring-boot-dependencies:${rootProject.extra["springBootVersion"]}"))
+
+    // 관측성: Micrometer 기반 관찰/추적 기능을 기본 제공한다.
+    api("io.micrometer:micrometer-observation")
+    api("io.micrometer:micrometer-tracing-bridge-brave")
+    api("io.zipkin.reporter2:zipkin-reporter-brave")
+
+    // 회복탄력성: Resilience4j 핵심 컴포넌트와 Micrometer 연계를 사전 구성한다.
+    api("io.github.resilience4j:resilience4j-spring-boot3:${rootProject.extra["resilience4jVersion"]}")
+    api("io.github.resilience4j:resilience4j-micrometer:${rootProject.extra["resilience4jVersion"]}")
+
+    // 로깅: Logback과 JSON 인코더를 포함시켜 서비스 로그 표준화를 돕는다.
+    implementation("ch.qos.logback:logback-classic:1.4.14")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+
+    // 추후 자동 구성 시 활용할 수 있도록 Spring Boot 핵심 의존성을 컴파일 전용으로 추가한다.
+    compileOnly("org.springframework.boot:spring-boot-autoconfigure")
+    compileOnly("org.springframework.boot:spring-boot-starter-web")
+
+    // 기본 단위 테스트를 위한 JUnit5 의존성을 등록해 두고 필요 시 확장한다.
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+}
