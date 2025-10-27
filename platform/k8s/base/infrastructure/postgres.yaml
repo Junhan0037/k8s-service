@@ -35,7 +35,8 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:15
+          image: postgres:16
+          # Docker Compose 환경과 버전을 맞춰 로컬 개발 데이터 정합성을 보장한다.
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432

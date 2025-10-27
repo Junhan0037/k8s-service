@@ -7,6 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/component: cache
 spec:
+  # 애플리케이션에서는 기존 ClusterIP 엔드포인트로 접근한다.
   ports:
     - name: redis
       port: 6379
@@ -15,12 +16,13 @@ spec:
     app.kubernetes.io/name: redis
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: redis
   labels:
     app.kubernetes.io/component: cache
 spec:
+  serviceName: redis
   replicas: 1
   selector:
     matchLabels:
@@ -31,11 +33,13 @@ spec:
         app.kubernetes.io/name: redis
         app.kubernetes.io/component: cache
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
         - name: redis
-          image: redis:7-alpine
+          image: redis:7.2.4-alpine
           imagePullPolicy: IfNotPresent
-          args: ["--save", "", "--appendonly", "no"]
+          # Docker Compose와 동일한 저장 주기 및 로그 레벨을 적용한다.
+          args: ["--save", "60", "1", "--loglevel", "warning"]
           ports:
             - containerPort: 6379
           resources:
@@ -55,3 +59,16 @@ spec:
               port: 6379
             initialDelaySeconds: 15
             periodSeconds: 10
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 2Gi

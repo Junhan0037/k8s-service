@@ -24,5 +24,6 @@ resources:
   - services/user-portal.yaml
   - services/cdw-loader.yaml
   - observability/zipkin.yaml
+  - observability/prometheus-operator-bundle.yaml
   - observability/prometheus.yaml
   - observability/grafana.yaml

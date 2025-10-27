@@ -1,73 +1,193 @@
-# Prometheus는 기본 스크레이프 설정으로 구성합니다.
+# Prometheus Operator 기반의 Prometheus 인스턴스와 ServiceMonitor를 정의합니다.
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: ServiceAccount
 metadata:
-  name: prometheus-config
-data:
-  prometheus.yml: |
-    global:
-      scrape_interval: 15s
-    scrape_configs:
-      - job_name: 'kubernetes-apiservers'
-        static_configs:
-          - targets: ['kubernetes.default.svc:443']
-      - job_name: 'researchex-services'
-        kubernetes_sd_configs:
-          - role: endpoints
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_service_label_app_kubernetes_io_part_of]
-            action: keep
-            regex: research-ex
+  name: prometheus
+  namespace: research-ex
+  labels:
+    app.kubernetes.io/component: observability
 ---
+# Prometheus가 클러스터 리소스를 스크레이프할 수 있도록 필요한 최소 권한을 부여합니다.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-researchex
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+      - nodes/metrics
+      - services
+      - endpoints
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  - nonResourceURLs:
+      - /metrics
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-researchex
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-researchex
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: research-ex
+---
+# 네임스페이스 내부에서 룰 ConfigMap 접근 권한을 보완합니다.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prometheus-researchex
+  namespace: research-ex
+  labels:
+    app.kubernetes.io/component: observability
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prometheus-researchex
+  namespace: research-ex
+  labels:
+    app.kubernetes.io/component: observability
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prometheus-researchex
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: research-ex
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: researchex
+  namespace: research-ex
+  labels:
+    app.kubernetes.io/component: observability
+spec:
+  serviceAccountName: prometheus
+  replicas: 1
+  retention: 2d
+  scrapeInterval: 15s
+  serviceMonitorSelector:
+    matchLabels:
+      monitoring.researchex.io/target: enabled
+  podMonitorSelector:
+    matchLabels:
+      monitoring.researchex.io/target: enabled
+  ruleSelector:
+    matchLabels:
+      monitoring.researchex.io/rule: enabled
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+  storage:
+    volumeClaimTemplate:
+      metadata:
+        labels:
+          app.kubernetes.io/component: observability
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 10Gi
+---
+# Prometheus 웹 UI 접근을 위한 Service입니다.
 apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
+  namespace: research-ex
   labels:
     app.kubernetes.io/component: observability
 spec:
+  type: ClusterIP
   ports:
     - name: http
       port: 9090
       targetPort: 9090
   selector:
-    app.kubernetes.io/name: prometheus
+    prometheus: researchex
 ---
-apiVersion: apps/v1
-kind: Deployment
+# Spring Boot 기반 마이크로서비스 공통 ServiceMonitor (Actuator 노출 가정)
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
 metadata:
-  name: prometheus
+  name: spring-services
+  namespace: research-ex
   labels:
-    app.kubernetes.io/component: observability
+    monitoring.researchex.io/target: enabled
 spec:
-  replicas: 1
   selector:
-    matchLabels:
-      app.kubernetes.io/name: prometheus
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: prometheus
-        app.kubernetes.io/component: observability
-    spec:
-      containers:
-        - name: prometheus
-          image: prom/prometheus:v2.48.0
-          imagePullPolicy: IfNotPresent
-          args:
-            - "--config.file=/etc/prometheus/prometheus.yml"
-            - "--storage.tsdb.path=/prometheus"
-          ports:
-            - containerPort: 9090
-          volumeMounts:
-            - name: prometheus-config
-              mountPath: /etc/prometheus
-            - name: prometheus-data
-              mountPath: /prometheus
-      volumes:
-        - name: prometheus-config
-          configMap:
-            name: prometheus-config
-        - name: prometheus-data
-          emptyDir: {}
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - research-service
+          - registry-service
+          - mr-viewer-service
+          - deid-service
+          - user-portal
+          - cdw-loader
+  namespaceSelector:
+    matchNames:
+      - research-ex
+  endpoints:
+    - port: http
+      interval: 15s
+      path: /actuator/prometheus
+      scheme: http
+      honorLabels: true
