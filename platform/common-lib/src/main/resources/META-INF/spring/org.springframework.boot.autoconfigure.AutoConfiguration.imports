@@ -1,0 +1,3 @@
+com.researchex.common.security.InternalSecurityAutoConfiguration
+com.researchex.common.error.ErrorHandlingAutoConfiguration
+com.researchex.common.tracing.TracingAutoConfiguration

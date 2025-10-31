@@ -24,9 +24,17 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.14")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 
-    // 추후 자동 구성 시 활용할 수 있도록 Spring Boot 핵심 의존성을 컴파일 전용으로 추가한다.
-    compileOnly("org.springframework.boot:spring-boot-autoconfigure")
-    compileOnly("org.springframework.boot:spring-boot-starter-web")
+    // Spring MVC 필터 및 자동 구성 기능을 사용한다.
+    api("org.springframework:spring-web")
+    // 전역 예외 처리기 등 MVC 계층 클래스를 노출하기 위해 WebMVC 모듈을 함께 포함한다.
+    api("org.springframework:spring-webmvc")
+    // Servlet API를 사용하는 필터 구현을 위해 Servlet 모듈을 명시한다.
+    compileOnly("jakarta.servlet:jakarta.servlet-api")
+    api("org.springframework:spring-context")
+    api("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    compileOnly("org.springframework.security:spring-security-core")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // 기본 단위 테스트를 위한 JUnit5 의존성을 등록해 두고 필요 시 확장한다.
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
