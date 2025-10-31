@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: cdw-loader
+
+server:
+  port: 8106
+
+service:
+  description: "CDW Loader 서비스는 임상 데이터 웨어하우스로 적재를 담당하는 스켈레톤이다"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"

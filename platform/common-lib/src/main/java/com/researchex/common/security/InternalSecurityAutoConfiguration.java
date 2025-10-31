@@ -1,37 +1,31 @@
 package com.researchex.common.security;
 
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * 내부 시크릿 검증 필터를 자동으로 등록하는 설정.
+ * 내부 서비스 간 통신에서 X-Internal-Secret 헤더를 검증하는 필터 자동 구성.
  */
-@AutoConfiguration
-@ConditionalOnClass(OncePerRequestFilter.class)
+@Configuration
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableConfigurationProperties(InternalSecurityProperties.class)
 public class InternalSecurityAutoConfiguration {
 
+    /**
+     * 내부 시크릿을 검증하는 필터를 등록한다.
+     */
     @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "researchex.security.internal", name = "enabled", havingValue = "true", matchIfMissing = true)
-    public InternalSecretFilter internalSecretFilter(InternalSecurityProperties properties) {
-        return new InternalSecretFilter(properties);
-    }
-
-    @Bean
-    @ConditionalOnProperty(prefix = "researchex.security.internal", name = "enabled", havingValue = "true", matchIfMissing = true)
-    public FilterRegistrationBean<InternalSecretFilter> internalSecretFilterRegistration(InternalSecretFilter filter, InternalSecurityProperties properties) {
-        FilterRegistrationBean<InternalSecretFilter> registrationBean = new FilterRegistrationBean<>(filter);
-        registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
-        registrationBean.setName("internalSecretFilter");
-        registrationBean.setEnabled(properties.isEnabled());
-        return registrationBean;
+    @ConditionalOnProperty(prefix = "researchex.security", name = "internal-secret")
+    public FilterRegistrationBean<InternalSecretFilter> internalSecretFilter(InternalSecurityProperties properties) {
+        FilterRegistrationBean<InternalSecretFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new InternalSecretFilter(properties));
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
+        registration.addUrlPatterns("/*");
+        return registration;
     }
 }

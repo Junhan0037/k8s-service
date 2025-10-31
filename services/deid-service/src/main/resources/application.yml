@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: deid-service
+
+server:
+  port: 8104
+
+service:
+  description: "De-identification 서비스는 개인정보 가명화를 처리하는 스켈레톤 구성이다"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"

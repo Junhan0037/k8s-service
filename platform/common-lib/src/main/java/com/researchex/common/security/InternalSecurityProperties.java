@@ -1,55 +1,34 @@
 package com.researchex.common.security;
 
-import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.util.StringUtils;
 
 /**
- * 내부 서비스 간 통신을 보호하기 위한 시크릿 설정을 보관하는 설정 클래스.
- * 항상 이해하기 쉽게 간단한 주석을 남긴다.
+ * 내부 API 보호를 위해 사용하는 시크릿 헤더 설정을 정의한다.
+ * 기본적으로 비활성화되어 있으며 시크릿 값이 주입된 경우에만 필터가 동작한다.
  */
-@Validated
-@ConfigurationProperties(prefix = "researchex.security.internal")
+@ConfigurationProperties(prefix = "researchex.security")
 public class InternalSecurityProperties {
 
     /**
-     * 내부 시크릿 검증 기능 활성화 여부.
+     * 내부 서비스 간 통신 시 검증할 시크릿 값.
      */
-    private boolean enabled = true;
+    private String secret;
 
     /**
-     * 보안 검증에 사용할 헤더 이름. 기본값은 X-Internal-Secret.
+     * 시크릿이 위치한 요청 헤더 이름.
      */
-    @NotBlank
     private String headerName = "X-Internal-Secret";
 
     /**
-     * 실제 비교에 사용하는 기대 시크릿 값.
-     */
-    @NotBlank
-    private String secret = "change-me";
-
-    /**
-     * 보호가 필요한 엔드포인트 패턴 목록. ANT 패턴을 사용한다.
+     * 보호 대상 경로 패턴 리스트. 기본값은 /internal/** 형태의 내부 API 이다.
      */
     private List<String> protectedPathPatterns = new ArrayList<>(List.of("/internal/**"));
 
     public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getHeaderName() {
-        return headerName;
-    }
-
-    public void setHeaderName(String headerName) {
-        this.headerName = headerName;
+        return StringUtils.hasText(secret);
     }
 
     public String getSecret() {
@@ -58,6 +37,14 @@ public class InternalSecurityProperties {
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public String getHeaderName() {
+        return headerName;
+    }
+
+    public void setHeaderName(String headerName) {
+        this.headerName = headerName;
     }
 
     public List<String> getProtectedPathPatterns() {

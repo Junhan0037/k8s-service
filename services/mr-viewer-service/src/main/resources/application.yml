@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: mr-viewer-service
+
+server:
+  port: 8103
+
+service:
+  description: "MR Viewer 서비스는 임상 의무기록 미리보기를 제공하는 스켈레톤 구성이다"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"

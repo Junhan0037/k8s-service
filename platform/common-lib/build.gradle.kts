@@ -23,6 +23,7 @@ dependencies {
     // 로깅: Logback과 JSON 인코더를 포함시켜 서비스 로그 표준화를 돕는다.
     implementation("ch.qos.logback:logback-classic:1.4.14")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
 
     // Spring MVC 필터 및 자동 구성 기능을 사용한다.
     api("org.springframework:spring-web")
@@ -34,7 +35,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.security:spring-security-core")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${rootProject.extra["springBootVersion"]}")
 
     // 기본 단위 테스트를 위한 JUnit5 의존성을 등록해 두고 필요 시 확장한다.
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")

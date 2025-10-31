@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: research-service
+
+server:
+  port: 8101
+
+service:
+  description: "임상 연구 검색 및 조회 기능을 제공하는 Research 서비스 스켈레톤"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
