@@ -4,7 +4,7 @@
 
 ## 구성 요소
 - `docker-compose.yml`: Kafka, Zookeeper, Redis, PostgreSQL, Elasticsearch, Zipkin, Prometheus, Grafana를 한 번에 기동한다.
-- `init/`: Postgres 스키마(`init.sql`)와 Kafka 토픽 생성 스크립트(`create-topics.sh`)를 보관한다.
+- `init/`: Postgres 스키마(`init/postgres/init.sql`), Elasticsearch 템플릿 및 샘플 데이터(`init/elasticsearch`), Kafka 토픽 생성 스크립트(`init/kafka/create-topics.sh`)를 보관한다.
 - `prometheus/`: Prometheus 수집 타겟 구성을 정의한다.
 - `grafana/`: Grafana 데이터 소스 및 대시보드 프로비저닝 파일을 제공한다.
 

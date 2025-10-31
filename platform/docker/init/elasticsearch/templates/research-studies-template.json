@@ -1,0 +1,114 @@
+{
+  "index_patterns": [
+    "research-studies*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "refresh_interval": "1s"
+    },
+    "mappings": {
+      "dynamic": "strict",
+      "properties": {
+        "studyId": {
+          "type": "keyword"
+        },
+        "studyCode": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "summary": {
+          "type": "text"
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "phase": {
+          "type": "keyword"
+        },
+        "diseaseArea": {
+          "type": "keyword"
+        },
+        "sponsor": {
+          "type": "keyword"
+        },
+        "principalInvestigator": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "tags": {
+          "type": "keyword"
+        },
+        "keywords": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "sites": {
+          "type": "nested",
+          "properties": {
+            "code": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            },
+            "city": {
+              "type": "keyword"
+            },
+            "country": {
+              "type": "keyword"
+            }
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "participantCount": {
+              "type": "integer"
+            },
+            "responseRate": {
+              "type": "float"
+            },
+            "enrollment": {
+              "type": "integer"
+            },
+            "screenFailureRate": {
+              "type": "float"
+            }
+          }
+        },
+        "createdAt": {
+          "type": "date"
+        },
+        "lastUpdated": {
+          "type": "date"
+        }
+      }
+    }
+  }
+}
