@@ -1,0 +1,95 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 10s
+      default-filters:
+        # Hop-by-hop 헤더가 다운스트림 서비스로 전파되는 것을 방지한다.
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      routes:
+        - id: research-service
+          uri: ${researchex.services.research.uri:http://localhost:8081}
+          predicates:
+            - Path=/api/research/**
+          filters:
+            # /api/research 부분을 제거하고 각 서비스가 /api/**로 동작하도록 맞춘다.
+            - StripPrefix=2
+        - id: registry-service
+          uri: ${researchex.services.registry.uri:http://localhost:8082}
+          predicates:
+            - Path=/api/registry/**
+          filters:
+            - StripPrefix=2
+        - id: mr-viewer-service
+          uri: ${researchex.services.mrviewer.uri:http://localhost:8083}
+          predicates:
+            - Path=/api/mr-viewer/**
+          filters:
+            - StripPrefix=2
+        - id: deid-service
+          uri: ${researchex.services.deid.uri:http://localhost:8084}
+          predicates:
+            - Path=/api/deid/**
+          filters:
+            - StripPrefix=2
+        - id: user-portal
+          uri: ${researchex.services.userportal.uri:http://localhost:8085}
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - StripPrefix=2
+        - id: cdw-loader
+          uri: ${researchex.services.cdwloader.uri:http://localhost:8086}
+          predicates:
+            - Path=/api/cdw/**
+          filters:
+            - StripPrefix=2
+
+gateway:
+  security:
+    jwt:
+      enabled: true
+      # HS256 서명을 검증하기 위한 기본 값이며, 실제 운영 환경에서는 반드시 교체해야 한다.
+      hmac-secret: ${GATEWAY_JWT_HMAC_SECRET:local-development-secret-key-32bytes-minimum!!}
+      clock-skew-seconds: 60
+      whitelist-patterns:
+        - /actuator/**
+        - /api/public/**
+
+researchex:
+  services:
+    research:
+      uri: ${RESEARCH_SERVICE_URI:http://localhost:8081}
+    registry:
+      uri: ${REGISTRY_SERVICE_URI:http://localhost:8082}
+    mrviewer:
+      uri: ${MR_VIEWER_SERVICE_URI:http://localhost:8083}
+    deid:
+      uri: ${DEID_SERVICE_URI:http://localhost:8084}
+    userportal:
+      uri: ${USER_PORTAL_SERVICE_URI:http://localhost:8085}
+    cdwloader:
+      uri: ${CDW_LOADER_SERVICE_URI:http://localhost:8086}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name}] [%X{X-Trace-Id}]"

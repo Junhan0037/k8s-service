@@ -4,8 +4,33 @@
 # - 학습 및 기능 검증에 필요한 필수 인프라(Kafka, Redis, PostgreSQL 등)를 한 번에 기동한다.
 # - 각 서비스는 단일 브릿지 네트워크(researchex-net)를 공유하여 로컬 통신을 단순화한다.
 version: "3.9"
+name: msa-researchex
 
 services:
+  gateway:
+    build:
+      context: ../..
+      dockerfile: gateway/Dockerfile
+    container_name: researchex-gateway
+    restart: unless-stopped
+    depends_on:
+      - kafka
+      - redis
+      - postgres
+    environment:
+      # JWT 시그니처 검증 및 백엔드 서비스 엔드포인트를 외부 설정으로 제어한다.
+      GATEWAY_JWT_HMAC_SECRET: ${GATEWAY_JWT_HMAC_SECRET:-local-development-secret-key-32bytes-minimum!!}
+      RESEARCH_SERVICE_URI: http://research-service:8080
+      REGISTRY_SERVICE_URI: http://registry-service:8080
+      MR_VIEWER_SERVICE_URI: http://mr-viewer-service:8080
+      DEID_SERVICE_URI: http://deid-service:8080
+      USER_PORTAL_SERVICE_URI: http://user-portal:8080
+      CDW_LOADER_SERVICE_URI: http://cdw-loader:8080
+    ports:
+      - "8080:8080"
+    networks:
+      - researchex-net
+
   # ZooKeeper는 분산 시스템의 ‘중앙 관리자’로, 여러 서버가 리더 선출·상태 동기화·설정 공유를 질서 있게 수행하도록 도와주는 조정자 시스템
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.1 # Kafka와 동일한 Confluent 배포판을 사용해 버전 호환성을 확보한다
