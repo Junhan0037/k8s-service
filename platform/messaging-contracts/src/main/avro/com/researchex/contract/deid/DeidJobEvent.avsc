@@ -1,0 +1,70 @@
+{
+  "type": "record",
+  "name": "DeidJobEvent",
+  "namespace": "com.researchex.contract.deid",
+  "doc": "CDW 적재 데이터 가명화 처리 상태를 전달하는 Avro 계약 정의",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "UUID 포맷의 이벤트 고유 식별자"
+    },
+    {
+      "name": "occurredAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "이벤트가 발생한 시각(UTC 기준)"
+    },
+    {
+      "name": "tenantId",
+      "type": "string",
+      "doc": "이벤트를 발생시킨 테넌트 식별자"
+    },
+    {
+      "name": "jobId",
+      "type": "string",
+      "doc": "가명화 Job 식별자(멱등성 기준 키)"
+    },
+    {
+      "name": "stage",
+      "type": {
+        "type": "enum",
+        "name": "DeidStage",
+        "namespace": "com.researchex.contract.deid",
+        "doc": "가명화 파이프라인 진행 상태",
+        "symbols": [
+          "REQUESTED",
+          "RUNNING",
+          "COMPLETED",
+          "FAILED"
+        ]
+      },
+      "doc": "가명화 파이프라인 진행 상태 값"
+    },
+    {
+      "name": "payloadLocation",
+      "type": "string",
+      "doc": "가명화 대상 데이터 혹은 출력 데이터 경로"
+    },
+    {
+      "name": "errorCode",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "실패 시 에러 코드(정상일 경우 null)"
+    },
+    {
+      "name": "errorMessage",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "실패 시 상세 메시지(정상일 경우 null)"
+    }
+  ]
+}

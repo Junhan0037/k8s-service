@@ -1,0 +1,98 @@
+# Kafka 토픽 계약 정의 파일
+# - 운영 환경과 개발 환경 모두 동일한 계약을 따르며, 브로커 설정은 인프라 레포지토리에서 관리한다.
+# - retention.ms / cleanup.policy 등의 브로커 레벨 옵션은 별도 관리하지만, 여기서는 요구되는 SLA를 문서화한다.
+
+topics:
+  - name: "research.query.request"
+    description: "연구 질의 실행 요청 이벤트 스트림"
+    keyStrategy: "tenantId"
+    partitions: 6
+    replicationFactor: 3
+    retention: "PT24H"
+    schema: "com.researchex.contract.research.ResearchQueryRequested"
+    headers:
+      - "trace-id"
+      - "tenant-id"
+      - "x-internal-secret"
+      - "retry-count"
+    producers:
+      - service: "user-portal"
+        notes: "사용자 포털이 질의 실행 요청을 제출한다."
+    consumers:
+      - service: "research-service-query-worker"
+        consumerGroup: "research-query-executor"
+        notes: "질의 실행 워커가 요청을 처리한다."
+    dlq:
+      name: "research.query.request.dlq"
+      retention: "P7D"
+
+  - name: "research.query.result"
+    description: "연구 질의 실행 결과/상태 업데이트 스트림"
+    keyStrategy: "queryId"
+    partitions: 6
+    replicationFactor: 3
+    retention: "P7D"
+    schema: "com.researchex.contract.research.ResearchQueryResult"
+    headers:
+      - "trace-id"
+      - "tenant-id"
+      - "x-internal-secret"
+    producers:
+      - service: "research-service-query-worker"
+        notes: "질의 실행 엔진이 결과 또는 진행 상태를 게시한다."
+    consumers:
+      - service: "user-portal-sse"
+        consumerGroup: "research-query-progress"
+        notes: "사용자 포털 SSE 스트림이 진행률과 결과를 구독한다."
+    dlq:
+      name: "research.query.result.dlq"
+      retention: "P7D"
+
+  - name: "deid.jobs"
+    description: "가명화 Job 요청 및 진행 상태 스트림"
+    keyStrategy: "tenantId+jobId"
+    partitions: 8
+    replicationFactor: 3
+    retention: "P3D"
+    schema: "com.researchex.contract.deid.DeidJobEvent"
+    headers:
+      - "trace-id"
+      - "tenant-id"
+      - "x-internal-secret"
+      - "retry-count"
+    producers:
+      - service: "cdw-loader"
+        notes: "CDW 로더가 가명화 Job을 생성한다."
+    consumers:
+      - service: "deid-service-worker"
+        consumerGroup: "deid-job-runner"
+        notes: "가명화 워커가 Job을 실행한다."
+    dlq:
+      name: "deid.jobs.dlq"
+      retention: "P7D"
+
+  - name: "cdw.load.events"
+    description: "CDW 적재 파이프라인에서 발생하는 이벤트 스트림"
+    keyStrategy: "tenantId+batchId"
+    partitions: 4
+    replicationFactor: 3
+    retention: "P30D"
+    schema: "com.researchex.contract.cdw.CdwLoadEvent"
+    headers:
+      - "trace-id"
+      - "tenant-id"
+      - "x-internal-secret"
+      - "retry-count"
+    producers:
+      - service: "cdw-loader"
+        notes: "CDW 로더가 적재 진행 상황을 게시한다."
+    consumers:
+      - service: "deid-service-worker"
+        consumerGroup: "deid-job-runner"
+        notes: "가명화 워커가 CDW 적재 완료 이벤트를 기반으로 작업을 트리거한다."
+      - service: "observability-consumer"
+        consumerGroup: "kafka-lag-monitor"
+        notes: "관측성 파이프라인이 컨슈머 랙/에러율 모니터링을 수행한다."
+    dlq:
+      name: "cdw.load.events.dlq"
+      retention: "P30D"

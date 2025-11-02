@@ -1,0 +1,79 @@
+{
+  "type": "record",
+  "name": "CdwLoadEvent",
+  "namespace": "com.researchex.contract.cdw",
+  "doc": "CDW 적재 파이프라인 진행 상태를 전달하는 Avro 계약 정의",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "UUID 포맷의 이벤트 고유 식별자"
+    },
+    {
+      "name": "occurredAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "이벤트가 발생한 시각(UTC 기준)"
+    },
+    {
+      "name": "tenantId",
+      "type": "string",
+      "doc": "이벤트를 발생시킨 테넌트 식별자"
+    },
+    {
+      "name": "batchId",
+      "type": "string",
+      "doc": "CDW 적재 배치 식별자"
+    },
+    {
+      "name": "stage",
+      "type": {
+        "type": "enum",
+        "name": "CdwLoadStage",
+        "namespace": "com.researchex.contract.cdw",
+        "doc": "CDW 로딩 진행 상태",
+        "symbols": [
+          "RECEIVED",
+          "VALIDATED",
+          "PERSISTED",
+          "FAILED"
+        ]
+      },
+      "doc": "CDW 로딩 진행 상태 값"
+    },
+    {
+      "name": "recordCount",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "처리된 레코드 수(미확정 시 null)"
+    },
+    {
+      "name": "sourceSystem",
+      "type": "string",
+      "doc": "데이터를 제공한 소스 시스템 이름"
+    },
+    {
+      "name": "errorCode",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "실패 시 에러 코드(정상일 경우 null)"
+    },
+    {
+      "name": "errorMessage",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "실패 시 상세 메시지(정상일 경우 null)"
+    }
+  ]
+}

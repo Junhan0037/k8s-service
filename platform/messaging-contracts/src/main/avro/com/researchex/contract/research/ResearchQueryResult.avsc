@@ -1,0 +1,83 @@
+{
+  "type": "record",
+  "name": "ResearchQueryResult",
+  "namespace": "com.researchex.contract.research",
+  "doc": "연구 질의 실행 결과 스트리밍 이벤트에 대한 Avro 계약 정의",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "UUID 포맷의 이벤트 고유 식별자"
+    },
+    {
+      "name": "occurredAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "이벤트가 발생한 시각(UTC 기준)"
+    },
+    {
+      "name": "tenantId",
+      "type": "string",
+      "doc": "이벤트를 발생시킨 테넌트 식별자"
+    },
+    {
+      "name": "queryId",
+      "type": "string",
+      "doc": "연구 질의 식별자(결과 집계 기준 키)"
+    },
+    {
+      "name": "status",
+      "type": {
+        "type": "enum",
+        "name": "ResearchQueryStatus",
+        "namespace": "com.researchex.contract.research",
+        "doc": "연구 질의 처리 상태",
+        "symbols": [
+          "PENDING",
+          "RUNNING",
+          "COMPLETED",
+          "FAILED"
+        ]
+      },
+      "doc": "연구 질의 처리 상태 값"
+    },
+    {
+      "name": "resultLocation",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "결과 파일 혹은 API 위치(없으면 null)"
+    },
+    {
+      "name": "rowCount",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null,
+      "doc": "최종 결과 건수(없으면 null)"
+    },
+    {
+      "name": "errorCode",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "실패 시 에러 코드(성공이면 null)"
+    },
+    {
+      "name": "errorMessage",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null,
+      "doc": "실패 시 상세 메시지(성공이면 null)"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ rootProject.name = "msa-researchex"
 // 모듈 구조를 명확히 하기 위해 필요한 프로젝트들을 모두 include 한다.
 include("gateway")
 include("platform:common-lib")
+include("platform:messaging-contracts")
 include("services:research-service")
 include("services:registry-service")
 include("services:mr-viewer-service")

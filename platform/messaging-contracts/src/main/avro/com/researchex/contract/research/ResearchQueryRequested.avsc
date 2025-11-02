@@ -1,0 +1,65 @@
+{
+  "type": "record",
+  "name": "ResearchQueryRequested",
+  "namespace": "com.researchex.contract.research",
+  "doc": "연구 질의 실행 요청 이벤트에 대한 Avro 계약 정의",
+  "fields": [
+    {
+      "name": "eventId",
+      "type": "string",
+      "doc": "UUID 포맷의 이벤트 고유 식별자"
+    },
+    {
+      "name": "occurredAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "이벤트가 발생한 시각(UTC 기준)"
+    },
+    {
+      "name": "tenantId",
+      "type": "string",
+      "doc": "이벤트를 발생시킨 테넌트 식별자"
+    },
+    {
+      "name": "queryId",
+      "type": "string",
+      "doc": "연구 질의 식별자(멱등성 기준 키)"
+    },
+    {
+      "name": "userId",
+      "type": "string",
+      "doc": "요청을 생성한 사용자 식별자"
+    },
+    {
+      "name": "criteria",
+      "type": "string",
+      "doc": "JSON 문자열로 직렬화된 질의 조건"
+    },
+    {
+      "name": "expectedRows",
+      "type": [
+        "null",
+        "int"
+      ],
+      "default": null,
+      "doc": "예상 결과 건수(없으면 null)"
+    },
+    {
+      "name": "priority",
+      "type": {
+        "type": "enum",
+        "name": "ResearchQueryPriority",
+        "namespace": "com.researchex.contract.research",
+        "doc": "연구 질의 처리 우선순위",
+        "symbols": [
+          "LOW",
+          "NORMAL",
+          "HIGH"
+        ]
+      },
+      "doc": "연구 질의 처리 우선순위 값"
+    }
+  ]
+}

@@ -56,8 +56,8 @@
    - PostgreSQL 스키마/DDL(`platform/docker/init/pg.sql`), Flyway/Liquibase 적용
    - Elasticsearch 인덱스 템플릿/매핑 스크립트, 샘플 데이터 적재 스크립트
 8. 메시징 계약 정의
-   - Kafka 토픽 명세: `research.query.request`, `research.query.result`, `deid.jobs`, `cdw.load.events` 등
-   - 메시지 스키마(JSON/Avro 중 택1), 키 전략, 리트라이/재처리 정책
+   - Kafka 토픽 명세: `research.query.request`, `research.query.result`, `deid.jobs`, `cdw.load.events` 등(`platform/messaging-contracts/src/main/resources/kafka/topics.yaml`)
+   - 메시지 스키마(JSON/Avro 중 택1), 키 전략, 리트라이/재처리 정책(`platform/messaging-contracts/src/main/avro`)
 9. 비동기 파이프라인 구현
    - CDW Loader → Kafka → Deid → Research 인덱싱(ES) 흐름 구현
    - CompletableFuture/WebFlux로 I/O 비동기화, 커스텀 ThreadPool 분리(IO/CPU)
