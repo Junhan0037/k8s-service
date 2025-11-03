@@ -1,5 +1,1 @@
-com.researchex.common.error.ErrorHandlingAutoConfiguration
-com.researchex.common.messaging.KafkaInfrastructureAutoConfiguration
-com.researchex.common.security.InternalSecurityAutoConfiguration
-com.researchex.common.tracing.TracingAutoConfiguration
-com.researchex.platform.cache.CacheAutoConfiguration
+com.researchex.common.resilience.ResilienceAutoConfiguration

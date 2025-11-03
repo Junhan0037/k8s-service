@@ -20,6 +20,7 @@ dependencies {
 
     // 관측성: Micrometer 기반 관찰/추적 기능을 기본 제공한다.
     api("io.micrometer:micrometer-observation")
+    api("io.micrometer:micrometer-core")
     api("io.micrometer:micrometer-tracing-bridge-brave")
     api("io.zipkin.reporter2:zipkin-reporter-brave")
 
@@ -31,6 +32,7 @@ dependencies {
     // 회복탄력성: Resilience4j 핵심 컴포넌트와 Micrometer 연계를 사전 구성한다.
     api("io.github.resilience4j:resilience4j-spring-boot3:${rootProject.extra["resilience4jVersion"]}")
     api("io.github.resilience4j:resilience4j-micrometer:${rootProject.extra["resilience4jVersion"]}")
+    api("io.github.resilience4j:resilience4j-bulkhead:${rootProject.extra["resilience4jVersion"]}")
 
     // 로깅: Logback과 JSON 인코더를 포함시켜 서비스 로그 표준화를 돕는다.
     implementation("ch.qos.logback:logback-classic:1.4.14")
@@ -47,9 +49,14 @@ dependencies {
     api("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.security:spring-security-core")
+    // Lombok을 활용해 보일러플레이트 코드를 제거하되 런타임 클래스패스에는 포함하지 않는다.
+    compileOnly("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${rootProject.extra["springBootVersion"]}")
 
     // 기본 단위 테스트를 위한 JUnit5 의존성을 등록해 두고 필요 시 확장한다.
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("org.springframework.boot:spring-boot-test")
+    testImplementation("org.assertj:assertj-core:3.25.3")
 }
