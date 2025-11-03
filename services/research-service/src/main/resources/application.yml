@@ -1,12 +1,29 @@
 spring:
   application:
     name: research-service
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    client-id: research-indexer
+    consumer:
+      group-id: research-indexer
+      auto-offset-reset: earliest
+    properties:
+      isolation.level: read_committed
+      max.poll.interval.ms: 300000
+      session.timeout.ms: 45000
+    listener:
+      concurrency: 2
 
 server:
   port: 8101
 
 service:
   description: "임상 연구 검색 및 조회 기능을 제공하는 Research 서비스 스켈레톤"
+
+app:
+  messaging:
+    topics:
+      deid-jobs: deid.jobs
 
 management:
   endpoints:

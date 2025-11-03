@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/gateway" />
             <option value="$PROJECT_DIR$/platform" />
             <option value="$PROJECT_DIR$/platform/common-lib" />
+            <option value="$PROJECT_DIR$/platform/messaging-contracts" />
             <option value="$PROJECT_DIR$/services" />
             <option value="$PROJECT_DIR$/services/cdw-loader" />
             <option value="$PROJECT_DIR$/services/deid-service" />

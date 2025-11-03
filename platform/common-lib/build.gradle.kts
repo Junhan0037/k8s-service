@@ -11,6 +11,13 @@ dependencies {
     // Spring Boot BOM을 먼저 불러와 핵심 스타터 의존성 버전을 일관되게 맞춘다.
     api(platform("org.springframework.boot:spring-boot-dependencies:${rootProject.extra["springBootVersion"]}"))
 
+    // 메시징: Kafka 클라이언트 및 Spring Kafka 통합을 공통 의존성으로 제공한다.
+    api("org.springframework.kafka:spring-kafka")
+    implementation("org.apache.kafka:kafka-clients")
+
+    // Avro 직렬화를 활용해 계약 기반 메시지 포맷을 유지한다.
+    api("org.apache.avro:avro:1.11.3")
+
     // 관측성: Micrometer 기반 관찰/추적 기능을 기본 제공한다.
     api("io.micrometer:micrometer-observation")
     api("io.micrometer:micrometer-tracing-bridge-brave")

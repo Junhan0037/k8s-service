@@ -13,21 +13,19 @@ import java.util.Map;
  * @param details 추가 정보
  */
 public record ErrorResponse(
-        String code,
-        String message,
-        String traceId,
-        Instant timestamp,
-        Map<String, Object> details) {
+    String code, String message, String traceId, Instant timestamp, Map<String, Object> details) {
 
-    public static ErrorResponse of(ErrorCode errorCode, String traceId, Map<String, Object> details) {
-        return new ErrorResponse(errorCode.getCode(), errorCode.getMessage(), traceId, Instant.now(), details);
-    }
+  public static ErrorResponse of(ErrorCode errorCode, String traceId, Map<String, Object> details) {
+    return new ErrorResponse(
+        errorCode.getCode(), errorCode.getMessage(), traceId, Instant.now(), details);
+  }
 
-    public static ErrorResponse of(ErrorCode errorCode, String traceId) {
-        return of(errorCode, traceId, Map.of());
-    }
+  public static ErrorResponse of(ErrorCode errorCode, String traceId) {
+    return of(errorCode, traceId, Map.of());
+  }
 
-    public static ErrorResponse of(String code, String message, String traceId, Map<String, Object> details) {
-        return new ErrorResponse(code, message, traceId, Instant.now(), details);
-    }
+  public static ErrorResponse of(
+      String code, String message, String traceId, Map<String, Object> details) {
+    return new ErrorResponse(code, message, traceId, Instant.now(), details);
+  }
 }

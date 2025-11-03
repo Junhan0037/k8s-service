@@ -1,12 +1,34 @@
 spring:
   application:
     name: deid-service
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    client-id: deid-service
+    consumer:
+      group-id: deid-job-runner
+      auto-offset-reset: earliest
+    producer:
+      compression-type: zstd
+      linger-ms: 10
+      retries: 5
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 120000
+        request.timeout.ms: 30000
+    listener:
+      concurrency: 2
 
 server:
   port: 8104
 
 service:
   description: "De-identification 서비스는 개인정보 가명화를 처리하는 스켈레톤 구성이다"
+
+app:
+  messaging:
+    topics:
+      cdw-load-events: cdw.load.events
+      deid-jobs: deid.jobs
 
 management:
   endpoints:

@@ -7,7 +7,7 @@ description = "Kafka 메시징 계약(Schema + Topic 메타데이터)"
 
 dependencies {
     // Avro 스키마 생성을 위한 런타임 라이브러리를 명시하여 코드 생성 시 의존성을 해소한다.
-    implementation("org.apache.avro:avro:1.11.3")
+    api("org.apache.avro:avro:1.11.3")
 }
 
 avro {

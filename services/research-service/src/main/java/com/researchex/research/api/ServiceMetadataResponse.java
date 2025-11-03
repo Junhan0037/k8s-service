@@ -10,4 +10,4 @@ import java.time.OffsetDateTime;
  * @param timestamp 응답 생성 시각(UTC offset 포함)
  */
 public record ServiceMetadataResponse(
-        String serviceName, String description, OffsetDateTime timestamp) {}
+    String serviceName, String description, OffsetDateTime timestamp) {}
