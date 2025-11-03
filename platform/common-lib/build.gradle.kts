@@ -23,6 +23,11 @@ dependencies {
     api("io.micrometer:micrometer-tracing-bridge-brave")
     api("io.zipkin.reporter2:zipkin-reporter-brave")
 
+    // 캐싱/세션: 서비스 전반에 일관된 다단 캐시 구성을 제공하기 위해 Cache/Redis 스타터와 Caffeine을 노출한다.
+    api("org.springframework.boot:spring-boot-starter-cache")
+    api("org.springframework.boot:spring-boot-starter-data-redis")
+    api("com.github.ben-manes.caffeine:caffeine:3.1.8")
+
     // 회복탄력성: Resilience4j 핵심 컴포넌트와 Micrometer 연계를 사전 구성한다.
     api("io.github.resilience4j:resilience4j-spring-boot3:${rootProject.extra["resilience4jVersion"]}")
     api("io.github.resilience4j:resilience4j-micrometer:${rootProject.extra["resilience4jVersion"]}")

@@ -36,6 +36,11 @@ public class InMemoryResearchIndexRepository {
         .subscribeOn(researchIoScheduler);
   }
 
+  /** 캐시 계층과 연동하기 위한 동기 조회 메서드. */
+  public Optional<ResearchIndexDocument> findByDocumentIdSync(String documentId) {
+    return Optional.ofNullable(store.get(documentId));
+  }
+
   /** 전체 문서를 반환한다. (로컬 개발 관찰용) */
   public Mono<List<ResearchIndexDocument>> findAll() {
     return Mono.fromCallable(() -> List.copyOf(store.values())).subscribeOn(researchIoScheduler);

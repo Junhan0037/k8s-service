@@ -19,7 +19,7 @@ import org.springframework.util.Assert;
 /**
  * CDW 적재 파이프라인을 비동기적으로 실행한다.
  *
- * <p>검증과 저장 단계를 분리하여 CPU/I/O 부하를 분산 처리하고, 각 단계 완료 시 Kafka로 이벤트를 게시한다.
+ * 검증과 저장 단계를 분리하여 CPU/I/O 부하를 분산 처리하고, 각 단계 완료 시 Kafka로 이벤트를 게시한다.
  */
 @Service
 public class CdwLoadPipelineService {

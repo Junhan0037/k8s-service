@@ -1,6 +1,12 @@
 spring:
   application:
     name: research-service
+  data:
+    redis:
+      # 로컬 개발 환경에서 Redis 연결 정보를 명시해 다단 캐시가 정상 동작하도록 한다.
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     client-id: research-indexer
@@ -24,6 +30,18 @@ app:
   messaging:
     topics:
       deid-jobs: deid.jobs
+
+researchex:
+  cache:
+    # 정적 데이터는 1시간 동안 보관해 메타데이터 호출 부하를 줄인다.
+    static-tier:
+      ttl: PT1H
+      maximum-size: 512
+    # 동적 질의는 10분 TTL로 구성해 최신성을 확보하면서도 조회 비용을 낮춘다.
+    dynamic-tier:
+      ttl: PT10M
+      maximum-size: 2048
+    redis-key-prefix: "researchex::cache::"
 
 management:
   endpoints:

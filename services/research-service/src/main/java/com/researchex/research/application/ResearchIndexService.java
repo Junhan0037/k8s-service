@@ -20,11 +20,15 @@ public class ResearchIndexService {
 
   private final InMemoryResearchIndexRepository repository;
   private final Scheduler researchCpuScheduler;
+  private final ResearchIndexCacheService cacheService;
 
   public ResearchIndexService(
-      InMemoryResearchIndexRepository repository, Scheduler researchCpuScheduler) {
+      InMemoryResearchIndexRepository repository,
+      Scheduler researchCpuScheduler,
+      ResearchIndexCacheService cacheService) {
     this.repository = repository;
     this.researchCpuScheduler = researchCpuScheduler;
+    this.cacheService = cacheService;
   }
 
   /** Deid Job 이벤트를 처리해 인덱스를 업데이트한다. */
@@ -44,6 +48,7 @@ public class ResearchIndexService {
                     document.tenantId(),
                     document.jobId(),
                     document.documentId()))
+        .doOnSuccess(document -> cacheService.evictDocument(document.documentId()))
         .then();
   }
 

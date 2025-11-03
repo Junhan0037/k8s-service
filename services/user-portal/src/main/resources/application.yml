@@ -1,9 +1,24 @@
 spring:
   application:
     name: user-portal
+  data:
+    redis:
+      # 세션 저장소로 사용할 Redis 기본 연결 정보를 지정한다.
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+  session:
+    store-type: redis
+    redis:
+      namespace: researchex:user-portal:session
+      flush-mode: on-save
 
 server:
   port: 8105
+  servlet:
+    session:
+      # 사용자 포털은 30분 세션 정책을 기본값으로 사용한다.
+      timeout: 30m
 
 service:
   description: "User Portal 서비스는 사용자/권한/세션 관리를 위한 스켈레톤이다"

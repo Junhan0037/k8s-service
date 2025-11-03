@@ -1,7 +1,7 @@
 package com.researchex.research.api;
 
+import com.researchex.research.application.ResearchIndexQueryService;
 import com.researchex.research.domain.ResearchIndexDocument;
-import com.researchex.research.infrastructure.InMemoryResearchIndexRepository;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,21 +15,21 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/internal/research/index")
 public class ResearchIndexQueryController {
 
-  private final InMemoryResearchIndexRepository repository;
+  private final ResearchIndexQueryService queryService;
 
-  public ResearchIndexQueryController(InMemoryResearchIndexRepository repository) {
-    this.repository = repository;
+  public ResearchIndexQueryController(ResearchIndexQueryService queryService) {
+    this.queryService = queryService;
   }
 
   @GetMapping
   public Mono<List<ResearchIndexDocument>> findAll() {
-    return repository.findAll();
+    return queryService.findAll();
   }
 
   @GetMapping("/{documentId}")
   public Mono<ResponseEntity<ResearchIndexDocument>> findByDocumentId(
       @PathVariable String documentId) {
-    return repository
+    return queryService
         .findByDocumentId(documentId)
         .map(optional -> optional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build()));
   }
