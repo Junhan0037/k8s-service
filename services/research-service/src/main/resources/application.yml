@@ -42,6 +42,19 @@ researchex:
       ttl: PT10M
       maximum-size: 2048
     redis-key-prefix: "researchex::cache::"
+  gateway:
+    user:
+      base-url: ${USER_PORTAL_BASE_URL:http://localhost:8200}
+      client-type: WEBCLIENT
+      connect-timeout: 2s
+      read-timeout: 5s
+    medical-record:
+      base-url: ${MR_VIEWER_BASE_URL:http://localhost:8300}
+      client-type: WEBCLIENT
+      connect-timeout: 2s
+      read-timeout: 5s
+  security:
+    secret: ${RESEARCHEX_INTERNAL_SECRET:researchex-internal-secret}
 
 management:
   endpoints:

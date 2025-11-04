@@ -1,11 +1,16 @@
 package com.researchex.common.tracing;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 /** 트레이싱과 HTTP 로깅 동작을 조절하는 프로퍼티 모음. */
 @Validated
 @ConfigurationProperties(prefix = "researchex.tracing")
+// Lombok을 통해 트레이싱 속성에 대한 게터/세터를 일관되게 생성한다.
+@Getter
+@Setter
 public class TracingProperties {
 
   /** TraceId 필터 활성화 여부. */
@@ -20,35 +25,9 @@ public class TracingProperties {
   /** 요청/응답 로깅 설정. */
   private final HttpLogging logging = new HttpLogging();
 
-  public boolean isEnabled() {
-    return enabled;
-  }
-
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
-
-  public String getHeaderName() {
-    return headerName;
-  }
-
-  public void setHeaderName(String headerName) {
-    this.headerName = headerName;
-  }
-
-  public boolean isGenerateIfMissing() {
-    return generateIfMissing;
-  }
-
-  public void setGenerateIfMissing(boolean generateIfMissing) {
-    this.generateIfMissing = generateIfMissing;
-  }
-
-  public HttpLogging getLogging() {
-    return logging;
-  }
-
   /** HTTP 로깅 관련 하위 설정을 담는 클래스. */
+  @Getter
+  @Setter
   public static class HttpLogging {
 
     /** HTTP 요청/응답 로깅 필터 활성화 여부. */
@@ -62,37 +41,5 @@ public class TracingProperties {
 
     /** 응답 본문 로깅 여부. */
     private boolean includeResponseBody = false;
-
-    public boolean isEnabled() {
-      return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-      this.enabled = enabled;
-    }
-
-    public int getMaxPayloadLength() {
-      return maxPayloadLength;
-    }
-
-    public void setMaxPayloadLength(int maxPayloadLength) {
-      this.maxPayloadLength = maxPayloadLength;
-    }
-
-    public boolean isIncludeRequestBody() {
-      return includeRequestBody;
-    }
-
-    public void setIncludeRequestBody(boolean includeRequestBody) {
-      this.includeRequestBody = includeRequestBody;
-    }
-
-    public boolean isIncludeResponseBody() {
-      return includeResponseBody;
-    }
-
-    public void setIncludeResponseBody(boolean includeResponseBody) {
-      this.includeResponseBody = includeResponseBody;
-    }
   }
 }

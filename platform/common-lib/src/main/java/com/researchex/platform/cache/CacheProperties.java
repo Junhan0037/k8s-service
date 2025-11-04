@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -13,6 +15,9 @@ import org.springframework.validation.annotation.Validated;
  */
 @Validated
 @ConfigurationProperties(prefix = "researchex.cache")
+// Lombok을 적용해 캐시 설정 필드의 게터/세터를 자동화한다.
+@Getter
+@Setter
 public class CacheProperties {
 
   @Valid private Tier staticTier = Tier.withDefaults(Duration.ofHours(1), 512);
@@ -27,49 +32,11 @@ public class CacheProperties {
   /** Redis L2 캐시 사용 여부를 제어한다. 테스트 환경 등에서는 비활성화할 수 있다. */
   private boolean enableRedis = true;
 
-  public Tier getStaticTier() {
-    return staticTier;
-  }
-
-  public void setStaticTier(Tier staticTier) {
-    this.staticTier = staticTier;
-  }
-
-  public Tier getDynamicTier() {
-    return dynamicTier;
-  }
-
-  public void setDynamicTier(Tier dynamicTier) {
-    this.dynamicTier = dynamicTier;
-  }
-
-  public String getRedisKeyPrefix() {
-    return redisKeyPrefix;
-  }
-
-  public void setRedisKeyPrefix(String redisKeyPrefix) {
-    this.redisKeyPrefix = redisKeyPrefix;
-  }
-
-  public boolean isCacheNullValues() {
-    return cacheNullValues;
-  }
-
-  public void setCacheNullValues(boolean cacheNullValues) {
-    this.cacheNullValues = cacheNullValues;
-  }
-
-  public boolean isEnableRedis() {
-    return enableRedis;
-  }
-
-  public void setEnableRedis(boolean enableRedis) {
-    this.enableRedis = enableRedis;
-  }
-
   /**
    * 캐시 단계별 설정을 표현하는 중첩 타입. TTL과 캐시 용량에 대한 유효성 검사를 통해 잘못된 구성을 조기에 감지한다.
    */
+  @Getter
+  @Setter
   public static class Tier {
 
     @NotNull private Duration ttl;
@@ -84,30 +51,6 @@ public class CacheProperties {
       tier.setTtl(ttl);
       tier.setMaximumSize(maximumSize);
       return tier;
-    }
-
-    public Duration getTtl() {
-      return ttl;
-    }
-
-    public void setTtl(Duration ttl) {
-      this.ttl = ttl;
-    }
-
-    public long getMaximumSize() {
-      return maximumSize;
-    }
-
-    public void setMaximumSize(long maximumSize) {
-      this.maximumSize = maximumSize;
-    }
-
-    public boolean isRecordStats() {
-      return recordStats;
-    }
-
-    public void setRecordStats(boolean recordStats) {
-      this.recordStats = recordStats;
     }
   }
 }

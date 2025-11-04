@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -13,6 +15,9 @@ import org.springframework.validation.annotation.Validated;
  */
 @Validated
 @ConfigurationProperties(prefix = "gateway.security.jwt")
+// Lombok을 활용해 게터/세터를 자동 생성하여 속성 변경 시 유지보수를 단순화한다.
+@Getter
+@Setter
 public class JwtProperties {
 
     /**
@@ -53,59 +58,4 @@ public class JwtProperties {
     @NotEmpty
     private List<String> whitelistPatterns = new ArrayList<>(List.of("/actuator/**"));
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getHmacSecret() {
-        return hmacSecret;
-    }
-
-    public void setHmacSecret(String hmacSecret) {
-        this.hmacSecret = hmacSecret;
-    }
-
-    public String getPublicKey() {
-        return publicKey;
-    }
-
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
-    }
-
-    public String getIssuer() {
-        return issuer;
-    }
-
-    public void setIssuer(String issuer) {
-        this.issuer = issuer;
-    }
-
-    public String getAudience() {
-        return audience;
-    }
-
-    public void setAudience(String audience) {
-        this.audience = audience;
-    }
-
-    public long getClockSkewSeconds() {
-        return clockSkewSeconds;
-    }
-
-    public void setClockSkewSeconds(long clockSkewSeconds) {
-        this.clockSkewSeconds = clockSkewSeconds;
-    }
-
-    public List<String> getWhitelistPatterns() {
-        return whitelistPatterns;
-    }
-
-    public void setWhitelistPatterns(List<String> whitelistPatterns) {
-        this.whitelistPatterns = whitelistPatterns;
-    }
 }

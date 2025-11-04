@@ -1,3 +1,4 @@
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.gradle.jvm.tasks.Jar
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
@@ -12,6 +13,12 @@ subprojects {
     // 서비스 모듈은 실행 가능한 애플리케이션 형태이므로 Spring Boot 플러그인을 사용한다.
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
+
+    extensions.configure<DependencyManagementExtension> {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:2023.0.1")
+        }
+    }
 
     dependencies {
         // 공통 라이브러리에 정의된 로깅/관측성/보안 구성을 재사용한다.

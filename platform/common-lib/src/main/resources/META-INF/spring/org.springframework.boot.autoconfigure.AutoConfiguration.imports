@@ -1,1 +1,7 @@
+com.researchex.platform.cache.CacheAutoConfiguration
+com.researchex.common.gateway.InternalGatewayAutoConfiguration
+com.researchex.common.messaging.KafkaInfrastructureAutoConfiguration
 com.researchex.common.resilience.ResilienceAutoConfiguration
+com.researchex.common.error.ErrorHandlingAutoConfiguration
+com.researchex.common.security.InternalSecurityAutoConfiguration
+com.researchex.common.tracing.TracingAutoConfiguration

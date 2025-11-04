@@ -1,13 +1,18 @@
 package com.researchex.research;
 
+import com.researchex.research.gateway.GatewayClientProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
- * Research 서비스의 진입점으로 Spring Boot 애플리케이션을 기동한다. 향후 도메인 컴포넌트들이 동일 컨텍스트에 등록되도록 패키지 루트를 기준으로 컴포넌트 스캔
- * 범위를 지정한다.
+ * Research 서비스 애플리케이션의 진입점.
+ * Feign 클라이언트 활성화를 통해 내부 통신 게이트웨이 구현(WebClient/Feign)을 유연하게 선택할 수 있도록 구성한다.
  */
 @SpringBootApplication
+@EnableConfigurationProperties(GatewayClientProperties.class)
+@EnableFeignClients(basePackages = "com.researchex.research.gateway.feign")
 public class ResearchServiceApplication {
 
   public static void main(String[] args) {

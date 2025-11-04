@@ -49,9 +49,6 @@ dependencies {
     api("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.security:spring-security-core")
-    // Lombok을 활용해 보일러플레이트 코드를 제거하되 런타임 클래스패스에는 포함하지 않는다.
-    compileOnly("org.projectlombok:lombok:1.18.32")
-    annotationProcessor("org.projectlombok:lombok:1.18.32")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${rootProject.extra["springBootVersion"]}")
 
     // 기본 단위 테스트를 위한 JUnit5 의존성을 등록해 두고 필요 시 확장한다.

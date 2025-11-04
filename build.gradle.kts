@@ -72,6 +72,14 @@ subprojects {
     // 모든 모듈에서 일관된 그룹 및 버전을 유지하기 위한 기본 값이다.
     group = "com.researchex"
     version = "0.1.0-SNAPSHOT"
+
+    // Lombok 기반 애노테이션을 전역으로 제공해 게터/세터 등 보일러플레이트를 제거한다.
+    dependencies {
+        add("compileOnly", "org.projectlombok:lombok:1.18.32")
+        add("annotationProcessor", "org.projectlombok:lombok:1.18.32")
+        add("testCompileOnly", "org.projectlombok:lombok:1.18.32")
+        add("testAnnotationProcessor", "org.projectlombok:lombok:1.18.32")
+    }
 }
 
 // 플랫폼 모듈들이 동일한 의존성 관리를 참조할 수 있도록 의존성 관리 BOM을 등록한다.
