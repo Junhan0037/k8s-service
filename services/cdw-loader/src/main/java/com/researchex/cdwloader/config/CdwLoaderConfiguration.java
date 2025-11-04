@@ -1,10 +1,11 @@
 package com.researchex.cdwloader.config;
 
-import java.util.concurrent.Executor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
 
 /** CDW Loader 서비스 전용 공통 빈을 정의한다. */
 @Configuration

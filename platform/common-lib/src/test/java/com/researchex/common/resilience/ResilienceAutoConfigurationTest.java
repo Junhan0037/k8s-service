@@ -1,7 +1,5 @@
 package com.researchex.common.resilience;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadRegistry;
 import io.github.resilience4j.bulkhead.ThreadPoolBulkhead;
@@ -13,11 +11,14 @@ import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryRegistry;
-import java.util.concurrent.ThreadPoolExecutor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.ThreadPoolExecutor;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * 회복탄력성 자동 설정이 기대한 레지스트리와 실행기를 노출하는지 검증한다.

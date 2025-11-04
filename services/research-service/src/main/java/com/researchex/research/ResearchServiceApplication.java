@@ -1,21 +1,30 @@
 package com.researchex.research;
 
+import com.researchex.research.config.SearchCacheProperties;
+import com.researchex.research.config.SearchProperties;
 import com.researchex.research.gateway.GatewayClientProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
- * Research 서비스 애플리케이션의 진입점.
- * Feign 클라이언트 활성화를 통해 내부 통신 게이트웨이 구현(WebClient/Feign)을 유연하게 선택할 수 있도록 구성한다.
+ * Research 서비스 진입점으로, 검색 API 제공과 함께 캐시 및 설정 바인딩을 초기화한다.
+ * <p>
+ * - {@link EnableCaching} : Redis + Caffeine 조합 캐시 활성화<br>
+ * - {@link EnableConfigurationProperties} : 검색 및 캐시 관련 커스텀 프로퍼티를 빈으로 등록
  */
+@EnableCaching
 @SpringBootApplication
-@EnableConfigurationProperties(GatewayClientProperties.class)
-@EnableFeignClients(basePackages = "com.researchex.research.gateway.feign")
+@EnableConfigurationProperties({SearchCacheProperties.class, SearchProperties.class, GatewayClientProperties.class})
 public class ResearchServiceApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(ResearchServiceApplication.class, args);
-  }
+    /**
+     * Spring Boot 애플리케이션을 실행한다.
+     *
+     * @param args 실행 인자
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(ResearchServiceApplication.class, args);
+    }
 }

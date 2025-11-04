@@ -1,10 +1,11 @@
 package com.researchex.deid.config;
 
-import java.util.concurrent.Executor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.concurrent.Executor;
 
 /** De-identification 서비스 공통 설정(스레드 풀, 구성 프로퍼티 등)을 정의한다. */
 @Configuration

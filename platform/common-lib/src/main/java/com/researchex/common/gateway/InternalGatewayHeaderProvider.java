@@ -2,10 +2,11 @@ package com.researchex.common.gateway;
 
 import com.researchex.common.security.InternalSecurityProperties;
 import com.researchex.common.tracing.TracingProperties;
-import java.util.Optional;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
+
+import java.util.Optional;
 
 /**
  * 내부 서비스 간 통신 시 필수 헤더(X-Trace-Id, X-Internal-Secret 등)를 주입하는 헬퍼 컴포넌트.

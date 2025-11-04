@@ -1,7 +1,7 @@
 package com.researchex.research.gateway.webclient;
 
-import com.researchex.research.gateway.GatewayClientProperties;
 import com.researchex.common.gateway.InternalGatewayHeaderProvider;
+import com.researchex.research.gateway.GatewayClientProperties;
 import io.netty.channel.ChannelOption;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,7 +9,6 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 

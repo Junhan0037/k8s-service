@@ -3,11 +3,12 @@ package com.researchex.platform.cache;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
+
+import java.time.Duration;
 
 /**
  * 다단 캐시 동작에 필요한 기본 정책을 외부 설정으로 노출한다. TTL 및 캐시 용량은 서비스 규모에 따라 쉽게

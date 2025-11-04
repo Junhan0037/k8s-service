@@ -1,12 +1,13 @@
 package com.researchex.research.config;
 
-import java.util.concurrent.Executor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+
+import java.util.concurrent.Executor;
 
 /** Research 서비스 공통 빈 설정. */
 @Configuration

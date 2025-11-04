@@ -6,14 +6,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.InvalidKeyException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 /**
  * JWT를 파싱하고 서명 검증을 수행하는 컴포넌트.

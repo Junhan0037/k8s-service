@@ -3,8 +3,6 @@ package com.researchex.research.messaging;
 import com.researchex.common.messaging.AvroMessageConverter;
 import com.researchex.contract.deid.DeidJobEvent;
 import com.researchex.research.application.ResearchIndexService;
-import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
 import io.micrometer.observation.annotation.Observed;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -13,6 +11,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 
 /** 가명화 완료 이벤트를 구독해 연구 인덱스 업데이트를 트리거한다. */
 @Component

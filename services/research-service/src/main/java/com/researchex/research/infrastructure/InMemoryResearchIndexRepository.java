@@ -1,13 +1,14 @@
 package com.researchex.research.infrastructure;
 
 import com.researchex.research.domain.ResearchIndexDocument;
+import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
 
 /** 로컬 개발 환경용 In-memory Elasticsearch 스텁. */
 @Repository

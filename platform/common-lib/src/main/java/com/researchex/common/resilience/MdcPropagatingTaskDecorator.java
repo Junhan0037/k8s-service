@@ -1,8 +1,9 @@
 package com.researchex.common.resilience;
 
-import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.core.task.TaskDecorator;
+
+import java.util.Map;
 
 /**
  * 비동기 실행 시 MDC 컨텍스트를 함께 전달하는 {@link TaskDecorator} 구현체다.

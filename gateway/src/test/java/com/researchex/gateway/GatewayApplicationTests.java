@@ -1,13 +1,8 @@
 package com.researchex.gateway;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import java.time.Duration;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
@@ -19,6 +14,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.time.Duration;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Gateway 핵심 동작(라우팅, JWT 검증, TraceId 전달)을 검증하는 통합 테스트.

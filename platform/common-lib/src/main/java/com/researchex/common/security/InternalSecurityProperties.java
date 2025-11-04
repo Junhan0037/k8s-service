@@ -1,11 +1,12 @@
 package com.researchex.common.security;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** 내부 API 보호를 위해 사용하는 시크릿 헤더 설정을 정의한다. 기본적으로 비활성화되어 있으며 시크릿 값이 주입된 경우에만 필터가 동작한다. */
 @ConfigurationProperties(prefix = "researchex.security")

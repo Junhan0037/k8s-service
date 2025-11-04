@@ -1,6 +1,5 @@
 package com.researchex.common.error;
 
-import java.util.UUID;
 import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +9,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.UUID;
 
 /** REST API 전역 예외 처리를 자동 구성한다. */
 @Configuration

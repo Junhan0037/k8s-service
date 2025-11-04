@@ -1,10 +1,6 @@
 package com.researchex.userportal.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.researchex.userportal.config.TestRedisConfiguration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +12,10 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.researchex.userportal.config.TestRedisConfiguration;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /** User Portal 서비스의 메타데이터 API 계약을 검증한다. */
 @SpringBootTest

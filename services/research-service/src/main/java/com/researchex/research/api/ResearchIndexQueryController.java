@@ -2,7 +2,6 @@ package com.researchex.research.api;
 
 import com.researchex.research.application.ResearchIndexQueryService;
 import com.researchex.research.domain.ResearchIndexDocument;
-import java.util.List;
 import io.micrometer.observation.annotation.Observed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /** 로컬 개발 환경에서 인덱스 상태를 확인하기 위한 엔드포인트. */
 @RestController

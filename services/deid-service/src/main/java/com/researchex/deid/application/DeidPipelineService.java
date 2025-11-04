@@ -6,16 +6,17 @@ import com.researchex.contract.cdw.CdwLoadStage;
 import com.researchex.contract.deid.DeidJobEvent;
 import com.researchex.contract.deid.DeidStage;
 import com.researchex.deid.config.DeidServiceTopicProperties;
-import java.time.Instant;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import java.time.Instant;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 /** CDW 로딩 이벤트를 입력으로 받아 가명화 파이프라인을 비동기적으로 실행한다. */
 @Service

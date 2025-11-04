@@ -1,14 +1,15 @@
 package com.researchex.common.resilience;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+
 import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * 회복탄력성 공통 설정 트리를 정의한다. 서킷 브레이커, 재시도, 속도 제한, 벌크헤드, 스레드 풀 등 주요 패턴에 대해

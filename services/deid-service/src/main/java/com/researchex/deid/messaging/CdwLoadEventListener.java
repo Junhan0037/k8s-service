@@ -3,14 +3,15 @@ package com.researchex.deid.messaging;
 import com.researchex.common.messaging.AvroMessageConverter;
 import com.researchex.contract.cdw.CdwLoadEvent;
 import com.researchex.deid.application.DeidPipelineService;
-import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 
 /** CDW 적재 이벤트를 수신해 가명화 파이프라인을 기동한다. */
 @Component

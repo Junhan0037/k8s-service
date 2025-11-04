@@ -1,12 +1,13 @@
 package com.researchex.research.gateway;
 
 import jakarta.validation.constraints.NotBlank;
-import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.validation.annotation.Validated;
+
+import java.time.Duration;
 
 /**
  * 내부 통신 게이트웨이 설정을 외부 프로퍼티에서 주입받기 위한 설정 클래스.

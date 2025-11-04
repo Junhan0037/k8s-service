@@ -7,6 +7,11 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       timeout: 2s
+  elasticsearch:
+    # 검색 백엔드 연결 정보를 명시해 개발 환경 진입 장벽을 낮춘다.
+    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
+    connection-timeout: 2s
+    socket-timeout: 3s
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     client-id: research-indexer
@@ -42,6 +47,17 @@ researchex:
       ttl: PT10M
       maximum-size: 2048
     redis-key-prefix: "researchex::cache::"
+  search:
+    index-name: research-studies
+    default-page-size: 20
+    max-page-size: 100
+    sortable-fields:
+      - updatedAt
+      - createdAt
+      - relevance
+      - enrollment
+    query-timeout: PT2S
+    sla-threshold: PT1S
   gateway:
     user:
       base-url: ${USER_PORTAL_BASE_URL:http://localhost:8200}
@@ -69,7 +85,7 @@ management:
         http.server.requests: true
         researchex.research.index.find-by-id: true
       slo:
-        http.server.requests: 0.25s,0.5s,1s
+        http.server.requests: 250ms,500ms,1s
   tracing:
     sampling:
       probability: 1.0

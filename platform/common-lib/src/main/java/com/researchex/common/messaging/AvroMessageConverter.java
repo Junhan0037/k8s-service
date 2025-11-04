@@ -1,8 +1,5 @@
 package com.researchex.common.messaging;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.io.BinaryDecoder;
@@ -15,6 +12,10 @@ import org.apache.avro.specific.SpecificRecord;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Avro SpecificRecord 객체를 Kafka 전송에 사용할 바이트 배열로 변환/역변환한다.

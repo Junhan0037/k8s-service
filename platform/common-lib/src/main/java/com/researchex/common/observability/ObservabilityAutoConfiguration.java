@@ -2,14 +2,13 @@ package com.researchex.common.observability;
 
 import brave.handler.MutableSpan;
 import brave.handler.SpanHandler;
-import brave.handler.SpanHandler.Cause;
 import brave.propagation.TraceContext;
 import io.micrometer.common.KeyValue;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationRegistry;
-import io.micrometer.observation.aop.ObservedAspect;
 import io.micrometer.observation.annotation.Observed;
-import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.aop.ObservedAspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;

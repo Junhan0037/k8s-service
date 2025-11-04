@@ -1,9 +1,6 @@
 package com.researchex.common.error;
 
 import jakarta.validation.ConstraintViolationException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -19,6 +16,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** 서비스 공통 전역 예외 처리기. */
 @Order(Ordered.HIGHEST_PRECEDENCE)

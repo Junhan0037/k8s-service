@@ -1,13 +1,13 @@
 package com.researchex.common.gateway;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.researchex.common.security.InternalSecurityProperties;
 import com.researchex.common.tracing.TracingProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /** InternalGatewayHeaderProvider 동작을 검증하는 단위 테스트. */
 class InternalGatewayHeaderProviderTest {

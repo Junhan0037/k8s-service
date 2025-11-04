@@ -1,7 +1,8 @@
 package com.researchex.gateway.trace;
 
-import java.util.UUID;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 /**
  * RFC4122 UUID를 이용해 트레이스 식별자를 생성하는 기본 구현체다.

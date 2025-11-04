@@ -1,15 +1,9 @@
 package com.researchex.research.gateway.webclient;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.researchex.common.gateway.InternalGatewayHeaderProvider;
 import com.researchex.common.security.InternalSecurityProperties;
 import com.researchex.common.tracing.TracingProperties;
 import com.researchex.research.gateway.GatewayClientProperties;
-import com.researchex.research.gateway.dto.UserProfileResponse;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -19,6 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /** WebClient 기반 게이트웨이가 필수 헤더를 전파하는지 검증한다. */
 class UserGatewayWebClientAdapterTest {

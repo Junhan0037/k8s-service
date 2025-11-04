@@ -2,12 +2,13 @@ package com.researchex.research.application;
 
 import com.researchex.research.domain.ResearchIndexDocument;
 import com.researchex.research.infrastructure.InMemoryResearchIndexRepository;
-import java.util.List;
-import java.util.Optional;
 import io.micrometer.observation.annotation.Observed;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 연구 인덱스 조회용 애플리케이션 서비스.

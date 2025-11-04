@@ -1,11 +1,12 @@
 package com.researchex.deid.api;
 
-import java.time.OffsetDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.OffsetDateTime;
 
 /** De-identification 서비스의 기본 API로 배포와 연계를 확인할 수 있도록 메타데이터를 제공한다. */
 @RestController

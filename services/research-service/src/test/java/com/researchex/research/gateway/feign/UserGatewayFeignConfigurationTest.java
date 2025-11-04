@@ -1,17 +1,18 @@
 package com.researchex.research.gateway.feign;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.researchex.common.gateway.InternalGatewayHeaderProvider;
 import com.researchex.common.security.InternalSecurityProperties;
 import com.researchex.common.tracing.TracingProperties;
 import com.researchex.research.gateway.GatewayClientProperties;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import java.time.Duration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
+
+import java.time.Duration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /** Feign 설정이 내부 헤더 전파를 수행하는지 검증한다. */
 class UserGatewayFeignConfigurationTest {

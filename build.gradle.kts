@@ -1,9 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.plugins.quality.CheckstyleExtension
-import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.kotlin.dsl.configure
 
 plugins {
     // 베이스 플러그인은 루트 프로젝트에서 아티팩트 생성을 방지하고 공통 태스크만 제공한다.

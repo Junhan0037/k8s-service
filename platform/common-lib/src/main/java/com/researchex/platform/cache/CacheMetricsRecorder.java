@@ -1,12 +1,13 @@
 package com.researchex.platform.cache;
 
+import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.FunctionCounter;
+import org.springframework.lang.Nullable;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.lang.Nullable;
 
 /**
  * 다단 캐시(L1/L2) 조회 결과를 관측 지표로 노출하는 헬퍼.

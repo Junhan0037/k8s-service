@@ -2,7 +2,6 @@ package com.researchex.gateway.security;
 
 import com.researchex.gateway.trace.TraceIdFilter;
 import io.jsonwebtoken.Claims;
-import java.nio.charset.StandardCharsets;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -15,6 +14,8 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * JWT 검증을 수행하는 전역 필터.
