@@ -3,6 +3,7 @@ package com.researchex.research.application;
 import com.researchex.platform.cache.CacheNames;
 import com.researchex.research.domain.ResearchIndexDocument;
 import com.researchex.research.infrastructure.InMemoryResearchIndexRepository;
+import io.micrometer.observation.annotation.Observed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,6 +32,10 @@ public class ResearchIndexCacheService {
    * 설정으로 인해 캐시되지 않는다.
    */
   @Cacheable(cacheNames = CacheNames.DYNAMIC_QUERY, key = "'doc:' + #documentId")
+  @Observed(
+      name = "researchex.research.cache.miss",
+      contextualName = "research-cache-miss",
+      lowCardinalityKeyValues = {"cache", CacheNames.DYNAMIC_QUERY})
   public ResearchIndexDocument findDocument(String documentId) {
     return repository
         .findByDocumentIdSync(documentId)

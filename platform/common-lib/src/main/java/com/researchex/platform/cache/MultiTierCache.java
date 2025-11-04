@@ -16,11 +16,14 @@ public class MultiTierCache implements Cache {
   private final String name;
   @Nullable private final Cache l1Cache;
   @Nullable private final Cache l2Cache;
+  private final CacheMetricsRecorder metricsRecorder;
 
-  public MultiTierCache(String name, @Nullable Cache l1Cache, @Nullable Cache l2Cache) {
+  public MultiTierCache(
+      String name, @Nullable Cache l1Cache, @Nullable Cache l2Cache, CacheMetricsRecorder metricsRecorder) {
     this.name = name;
     this.l1Cache = l1Cache;
     this.l2Cache = l2Cache;
+    this.metricsRecorder = metricsRecorder;
   }
 
   @Override
@@ -38,12 +41,17 @@ public class MultiTierCache implements Cache {
   public ValueWrapper get(Object key) {
     ValueWrapper valueFromL1 = getFromCache(l1Cache, key);
     if (valueFromL1 != null) {
+      metricsRecorder.recordL1Hit(name);
       return valueFromL1;
     }
 
     ValueWrapper valueFromL2 = getFromCache(l2Cache, key);
     if (valueFromL2 != null && l1Cache != null) {
+      metricsRecorder.recordL2Hit(name);
       l1Cache.put(key, Objects.requireNonNull(valueFromL2).get());
+    }
+    if (valueFromL2 == null) {
+      metricsRecorder.recordMiss(name);
     }
     return valueFromL2;
   }

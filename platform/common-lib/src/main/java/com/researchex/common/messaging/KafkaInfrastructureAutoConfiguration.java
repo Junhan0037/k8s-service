@@ -94,6 +94,7 @@ public class KafkaInfrastructureAutoConfiguration {
     ContainerProperties containerProperties = factory.getContainerProperties();
     containerProperties.setAckMode(ContainerProperties.AckMode.MANUAL); // 리스너 로직이 성공적으로 끝난 뒤 명시적으로 ack.acknowledge() 호출해 오프셋 커밋
     containerProperties.setObservationEnabled(true); // 리스너 측도 관측 정보 수집
+    containerProperties.setMicrometerEnabled(true); // 컨슈머 랙/처리량 등 Micrometer 메트릭 수집
     return factory;
   }
 

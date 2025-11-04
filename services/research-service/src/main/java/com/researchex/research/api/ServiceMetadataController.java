@@ -1,6 +1,7 @@
 package com.researchex.research.api;
 
 import com.researchex.research.application.ServiceMetadataService;
+import io.micrometer.observation.annotation.Observed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,10 @@ public class ServiceMetadataController {
   }
 
   @GetMapping("/metadata")
+  @Observed(
+      name = "researchex.research.metadata.fetch",
+      contextualName = "research-metadata-fetch",
+      lowCardinalityKeyValues = {"endpoint", "metadata"})
   public ResponseEntity<ServiceMetadataResponse> fetchMetadata() {
     // 메타데이터는 캐시 계층에서 관리되므로 컨트롤러는 단순 위임만 수행한다.
     return ResponseEntity.ok(metadataService.fetchMetadata());

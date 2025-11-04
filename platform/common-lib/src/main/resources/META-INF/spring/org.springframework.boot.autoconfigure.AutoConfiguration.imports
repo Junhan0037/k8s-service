@@ -5,3 +5,4 @@ com.researchex.common.resilience.ResilienceAutoConfiguration
 com.researchex.common.error.ErrorHandlingAutoConfiguration
 com.researchex.common.security.InternalSecurityAutoConfiguration
 com.researchex.common.tracing.TracingAutoConfiguration
+com.researchex.common.observability.ObservabilityAutoConfiguration

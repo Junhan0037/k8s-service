@@ -3,6 +3,7 @@ package com.researchex.research.application;
 import com.researchex.platform.cache.CacheNames;
 import com.researchex.research.api.ServiceMetadataResponse;
 import java.time.OffsetDateTime;
+import io.micrometer.observation.annotation.Observed;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,10 @@ public class ServiceMetadataService {
 
   /** 캐시가 만료될 때만 새 타임스탬프를 생성해 반환한다. */
   @Cacheable(cacheNames = CacheNames.STATIC_REFERENCE, key = "'service-metadata'")
+  @Observed(
+      name = "researchex.research.metadata.cache-miss",
+      contextualName = "research-metadata-cache-miss",
+      lowCardinalityKeyValues = {"cache", CacheNames.STATIC_REFERENCE})
   public ServiceMetadataResponse fetchMetadata() {
     return new ServiceMetadataResponse(serviceName, serviceDescription, OffsetDateTime.now());
   }

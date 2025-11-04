@@ -19,9 +19,9 @@ scrape_configs:
       # 각 서비스 컨테이너는 동일한 브릿지 네트워크 상에서 고유 이름으로 스크레이프된다.
       - targets:
           - "gateway:8080"
-          - "research-service:8081"
-          - "registry-service:8082"
-          - "mr-viewer-service:8083"
-          - "deid-service:8084"
-          - "user-portal:8085"
-          - "cdw-loader:8086"
+          - "research-service:8101"
+          - "registry-service:8102"
+          - "mr-viewer-service:8103"
+          - "deid-service:8104"
+          - "user-portal:8105"
+          - "cdw-loader:8106"

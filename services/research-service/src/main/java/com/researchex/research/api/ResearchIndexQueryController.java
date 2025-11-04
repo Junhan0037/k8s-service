@@ -3,6 +3,7 @@ package com.researchex.research.api;
 import com.researchex.research.application.ResearchIndexQueryService;
 import com.researchex.research.domain.ResearchIndexDocument;
 import java.util.List;
+import io.micrometer.observation.annotation.Observed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +23,19 @@ public class ResearchIndexQueryController {
   }
 
   @GetMapping
+  @Observed(
+      name = "researchex.research.index.list",
+      contextualName = "research-index-list",
+      lowCardinalityKeyValues = {"endpoint", "findAll"})
   public Mono<List<ResearchIndexDocument>> findAll() {
     return queryService.findAll();
   }
 
   @GetMapping("/{documentId}")
+  @Observed(
+      name = "researchex.research.index.detail",
+      contextualName = "research-index-detail",
+      lowCardinalityKeyValues = {"endpoint", "findById"})
   public Mono<ResponseEntity<ResearchIndexDocument>> findByDocumentId(
       @PathVariable String documentId) {
     return queryService

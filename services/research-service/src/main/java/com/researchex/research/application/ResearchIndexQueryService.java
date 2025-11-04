@@ -4,6 +4,7 @@ import com.researchex.research.domain.ResearchIndexDocument;
 import com.researchex.research.infrastructure.InMemoryResearchIndexRepository;
 import java.util.List;
 import java.util.Optional;
+import io.micrometer.observation.annotation.Observed;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -31,6 +32,10 @@ public class ResearchIndexQueryService {
   }
 
   /** 전체 문서 목록은 캐싱 효과가 낮으므로 기존 비동기 저장소 호출을 그대로 노출한다. */
+  @Observed(
+      name = "researchex.research.index.find-all",
+      contextualName = "research-index-find-all",
+      lowCardinalityKeyValues = {"operation", "findAll"})
   public Mono<List<ResearchIndexDocument>> findAll() {
     return repository.findAll();
   }
@@ -39,6 +44,10 @@ public class ResearchIndexQueryService {
    * 단건 조회 시 캐시 계층을 거친 결과를 Optional 형태로 반환한다.
    * Mono로 래핑해 컨트롤러에서 논블로킹 방식으로 처리할 수 있도록 한다.
    */
+  @Observed(
+      name = "researchex.research.index.find-by-id",
+      contextualName = "research-index-find-by-id",
+      lowCardinalityKeyValues = {"operation", "findById"})
   public Mono<Optional<ResearchIndexDocument>> findByDocumentId(String documentId) {
     return Mono.fromCallable(() -> Optional.ofNullable(cacheService.findDocument(documentId)))
         .subscribeOn(researchIoScheduler);

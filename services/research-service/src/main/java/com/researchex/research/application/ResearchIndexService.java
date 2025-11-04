@@ -6,6 +6,7 @@ import com.researchex.research.domain.ResearchIndexDocument;
 import com.researchex.research.infrastructure.InMemoryResearchIndexRepository;
 import java.time.Instant;
 import java.util.UUID;
+import io.micrometer.observation.annotation.Observed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ public class ResearchIndexService {
   }
 
   /** Deid Job 이벤트를 처리해 인덱스를 업데이트한다. */
+  @Observed(
+      name = "researchex.research.deid.indexing",
+      contextualName = "deid-indexing",
+      lowCardinalityKeyValues = {"stage", "completed"})
   public Mono<Void> handleDeidJobEvent(DeidJobEvent event) {
     if (event.getStage() != DeidStage.COMPLETED) {
       log.debug("Deid 이벤트가 COMPLETED 단계가 아니므로 인덱싱을 건너뜁니다. stage={}", event.getStage());

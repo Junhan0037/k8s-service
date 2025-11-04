@@ -11,6 +11,11 @@ dependencies {
     // Spring Boot BOM을 먼저 불러와 핵심 스타터 의존성 버전을 일관되게 맞춘다.
     api(platform("org.springframework.boot:spring-boot-dependencies:${rootProject.extra["springBootVersion"]}"))
 
+    // 관측성: 각 서비스가 동일한 Actuator/Prometheus 스택을 사용하도록 공통 스타터를 노출한다.
+    api("org.springframework.boot:spring-boot-starter-actuator")
+    api("io.micrometer:micrometer-registry-prometheus")
+    api("org.springframework.boot:spring-boot-starter-aop")
+
     // 메시징: Kafka 클라이언트 및 Spring Kafka 통합을 공통 의존성으로 제공한다.
     api("org.springframework.kafka:spring-kafka")
     implementation("org.apache.kafka:kafka-clients")

@@ -5,6 +5,7 @@ import com.researchex.contract.deid.DeidJobEvent;
 import com.researchex.research.application.ResearchIndexService;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import io.micrometer.observation.annotation.Observed;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,10 @@ public class DeidJobEventListener {
       topics = "${app.messaging.topics.deid-jobs}",
       groupId = "${spring.kafka.consumer.group-id}",
       containerFactory = "kafkaListenerContainerFactory")
+  @Observed(
+      name = "researchex.research.deid.consumer",
+      contextualName = "deid-job-consumer",
+      lowCardinalityKeyValues = {"topic", "deid.jobs"})
   public void onMessage(
       ConsumerRecord<String, byte[]> consumerRecord, Acknowledgment acknowledgment) {
     try {

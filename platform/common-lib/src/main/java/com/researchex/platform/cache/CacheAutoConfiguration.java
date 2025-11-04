@@ -2,6 +2,8 @@ package com.researchex.platform.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
@@ -35,14 +38,16 @@ public class CacheAutoConfiguration {
 
   @Bean
   @Primary
-  public CacheManager researchexCacheManager(CacheProperties properties, ObjectProvider<RedisConnectionFactory> connectionFactoryProvider, ObjectProvider<ObjectMapper> objectMapperProvider) {
-    SimpleCacheManager caffeineCacheManager = createCaffeineCacheManager(properties);
+  public CacheManager researchexCacheManager(CacheProperties properties, ObjectProvider<RedisConnectionFactory> connectionFactoryProvider, ObjectProvider<ObjectMapper> objectMapperProvider, ObjectProvider<MeterRegistry> meterRegistryProvider) {
+    MeterRegistry meterRegistry = meterRegistryProvider.getIfAvailable();
+    SimpleCacheManager caffeineCacheManager = createCaffeineCacheManager(properties, meterRegistry);
     RedisConnectionFactory redisConnectionFactory = properties.isEnableRedis() ? connectionFactoryProvider.getIfAvailable() : null;
     CacheManager redisCacheManager = redisConnectionFactory != null ? createRedisCacheManager(redisConnectionFactory, properties, objectMapperProvider.getIfAvailable()) : null;
-    return new MultiTierCacheManager(caffeineCacheManager, redisCacheManager);
+    CacheMetricsRecorder metricsRecorder = meterRegistry != null ? CacheMetricsRecorder.instrumented(meterRegistry) : CacheMetricsRecorder.noop();
+    return new MultiTierCacheManager(caffeineCacheManager, redisCacheManager, metricsRecorder);
   }
 
-  private SimpleCacheManager createCaffeineCacheManager(CacheProperties properties) {
+  private SimpleCacheManager createCaffeineCacheManager(CacheProperties properties, @Nullable MeterRegistry meterRegistry) {
     List<CaffeineCache> caches = new ArrayList<>();
     caches.add(buildCaffeineCache(CacheNames.STATIC_REFERENCE, properties.getStaticTier(), properties.isCacheNullValues()));
     caches.add(buildCaffeineCache(CacheNames.DYNAMIC_QUERY, properties.getDynamicTier(), properties.isCacheNullValues()));
@@ -50,6 +55,9 @@ public class CacheAutoConfiguration {
     SimpleCacheManager cacheManager = new SimpleCacheManager();
     cacheManager.setCaches(caches);
     cacheManager.afterPropertiesSet();
+    if (meterRegistry != null) {
+      registerCaffeineMetrics(cacheManager, meterRegistry);
+    }
     return cacheManager;
   }
 
@@ -83,5 +91,20 @@ public class CacheAutoConfiguration {
         .withInitialCacheConfigurations(cacheConfigurations)
         .transactionAware()
         .build();
+  }
+
+  private void registerCaffeineMetrics(SimpleCacheManager cacheManager, MeterRegistry meterRegistry) {
+    cacheManager
+        .getCacheNames()
+        .forEach(
+            cacheName -> {
+              Cache cache = cacheManager.getCache(cacheName);
+
+              // 각 캐시마다 Micrometer의 기본 Caffeine 지표를 활성화해 L1 세부 지표를 함께 노출한다.
+              if (cache instanceof CaffeineCache caffeineCache) {
+                CaffeineCacheMetrics.monitor(meterRegistry, caffeineCache.getNativeCache(), "researchex.cache.l1", "cache", cacheName);
+              }
+            }
+        );
   }
 }

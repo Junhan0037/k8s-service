@@ -18,10 +18,15 @@ public class MultiTierCacheManager extends AbstractCacheManager {
 
   private final CacheManager l1CacheManager;
   @Nullable private final CacheManager l2CacheManager;
+  private final CacheMetricsRecorder metricsRecorder;
 
-  public MultiTierCacheManager(CacheManager l1CacheManager, @Nullable CacheManager l2CacheManager) {
+  public MultiTierCacheManager(
+      CacheManager l1CacheManager,
+      @Nullable CacheManager l2CacheManager,
+      CacheMetricsRecorder metricsRecorder) {
     this.l1CacheManager = l1CacheManager;
     this.l2CacheManager = l2CacheManager;
+    this.metricsRecorder = metricsRecorder;
   }
 
   @Override
@@ -43,6 +48,6 @@ public class MultiTierCacheManager extends AbstractCacheManager {
     if (l1 == null && l2 == null) {
       return null;
     }
-    return new MultiTierCache(name, l1, l2);
+    return new MultiTierCache(name, l1, l2, metricsRecorder);
   }
 }
