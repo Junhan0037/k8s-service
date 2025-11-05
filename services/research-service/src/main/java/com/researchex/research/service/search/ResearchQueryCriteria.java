@@ -24,6 +24,17 @@ public class ResearchQueryCriteria {
     private final String query;
 
     /**
+     * 멀티 테넌트 환경에서의 테넌트 식별자.
+     */
+    @Builder.Default
+    private final String tenantId = "default";
+
+    /**
+     * 진행률 추적을 위한 질의 식별자.
+     */
+    private final String queryId;
+
+    /**
      * 0-based 페이지 번호.
      */
     private final int page;
@@ -56,7 +67,8 @@ public class ResearchQueryCriteria {
      */
     public String toCacheKeySuffix() {
         StringBuilder builder = new StringBuilder();
-        builder.append("q=").append(Objects.toString(query, ""))
+        builder.append("tenant=").append(Objects.toString(tenantId, "default"))
+                .append("|q=").append(Objects.toString(query, ""))
                 .append("|p=").append(page)
                 .append("|s=").append(size);
         if (!filters.isEmpty()) {

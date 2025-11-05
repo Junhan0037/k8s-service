@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
 /**
  * 연구 검색 API 엔드포인트.
@@ -56,11 +57,16 @@ public class ResearchQueryController {
             @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "sort", required = false) List<String> sortParams,
             @RequestParam(name = "filter", required = false) List<String> filterParams,
-            @RequestParam(name = "cache", defaultValue = "true") boolean useCache
+            @RequestParam(name = "cache", defaultValue = "true") boolean useCache,
+            @RequestParam(name = "queryId", required = false) String queryId,
+            @RequestParam(name = "tenantId", required = false) String tenantId
     ) {
         int pageSize = size == null ? searchProperties.getDefaultPageSize() : size;
         List<ResearchSortOption> sorts = parseSorts(sortParams);
         Map<String, List<String>> filters = parseFilters(filterParams);
+        String normalizedTenantId = StringUtils.hasText(tenantId) ? tenantId.trim() : "default";
+        // SSE 구독에서 사용될 queryId가 전달되지 않았다면 새로 발급한다.
+        String resolvedQueryId = StringUtils.hasText(queryId) ? queryId.trim() : UUID.randomUUID().toString();
 
         ResearchQueryCriteria criteria = ResearchQueryCriteria.builder()
                 .query(StringUtils.hasText(query) ? query.trim() : null)
@@ -69,9 +75,11 @@ public class ResearchQueryController {
                 .sorts(sorts)
                 .filters(filters)
                 .useCache(useCache)
+                .tenantId(normalizedTenantId)
+                .queryId(resolvedQueryId)
                 .build();
 
-        log.debug("Research 검색 요청 수신. criteria={}", criteria.toCacheKeySuffix());
+        log.debug("Research 검색 요청 수신. tenantId={}, queryId={}, criteria={}", normalizedTenantId, resolvedQueryId, criteria.toCacheKeySuffix());
         ResearchQueryResponse response = researchQueryService.search(criteria);
         return ResponseEntity.ok(response);
     }

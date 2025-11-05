@@ -2,8 +2,10 @@ package com.researchex.research.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.researchex.contract.research.ResearchQueryStatus;
 import com.researchex.research.config.SearchProperties;
 import com.researchex.research.domain.ResearchDocument;
+import com.researchex.research.progress.ResearchProgressService;
 import com.researchex.research.service.cache.SearchResultCacheRepository;
 import com.researchex.research.service.dto.FacetBucketResponse;
 import com.researchex.research.service.dto.PaginationMetadata;
@@ -41,18 +43,25 @@ public class ResearchQueryService {
     private final ObjectMapper objectMapper;
     private final SearchProperties properties;
     private final MeterRegistry meterRegistry;
+    private final ResearchProgressService progressService;
     private final Timer searchLatencyTimer;
     private final Counter cacheHitCounter;
     private final Counter cacheMissCounter;
     private final Counter cacheBypassCounter;
     private final Counter slaViolationCounter;
 
-    public ResearchQueryService(ResearchSearchRepository searchRepository, SearchResultCacheRepository cacheRepository, ObjectMapper objectMapper, SearchProperties properties, MeterRegistry meterRegistry) {
+    public ResearchQueryService(ResearchSearchRepository searchRepository,
+                                SearchResultCacheRepository cacheRepository,
+                                ObjectMapper objectMapper,
+                                SearchProperties properties,
+                                MeterRegistry meterRegistry,
+                                ResearchProgressService progressService) {
         this.searchRepository = searchRepository;
         this.cacheRepository = cacheRepository;
         this.objectMapper = objectMapper;
         this.properties = properties;
         this.meterRegistry = meterRegistry;
+        this.progressService = progressService;
         this.searchLatencyTimer = Timer.builder("researchex.research.search.latency")
                 .description("Research 검색 API 레이턴시")
                 .publishPercentileHistogram()
@@ -78,22 +87,33 @@ public class ResearchQueryService {
      */
     public ResearchQueryResponse search(ResearchQueryCriteria criteria) {
         validatePageSize(criteria.getSize());
+        TrackingContext trackingContext = TrackingContext.from(criteria);
+
+        if (trackingContext.enabled()) {
+            // SSE 진행률을 위해 요청이 수신되었음을 즉시 전파한다.
+            progressService.publishPending(trackingContext.tenantId(), trackingContext.queryId(), "검색 요청이 접수되었습니다.");
+        }
 
         if (!criteria.isUseCache()) {
             cacheBypassCounter.increment();
-            return executeSearch(criteria, null);
+            return executeSearch(criteria, null, trackingContext);
         }
 
         String cacheKey = CACHE_KEY_PREFIX + criteria.toCacheKeySuffix();
         Optional<ResearchQueryResponse> cached = readFromCache(cacheKey);
         if (cached.isPresent()) {
             cacheHitCounter.increment();
-            return cached.get();
+            ResearchQueryResponse cachedResponse = attachQueryId(cached.get(), trackingContext.queryId());
+            if (trackingContext.enabled()) {
+                long totalElements = cachedResponse.pagination().totalElements();
+                progressService.publishCompleted(trackingContext.tenantId(), trackingContext.queryId(), totalElements, true, null);
+            }
+            return cachedResponse;
         }
 
         cacheMissCounter.increment();
 
-        return executeSearch(criteria, cacheKey);
+        return executeSearch(criteria, cacheKey, trackingContext);
     }
 
     private void validatePageSize(int pageSize) {
@@ -114,10 +134,14 @@ public class ResearchQueryService {
                 });
     }
 
-    private ResearchQueryResponse executeSearch(ResearchQueryCriteria criteria, String cacheKey) {
+    private ResearchQueryResponse executeSearch(ResearchQueryCriteria criteria, String cacheKey, TrackingContext trackingContext) {
         Timer.Sample sample = Timer.start(meterRegistry);
 
         try {
+            if (trackingContext.enabled()) {
+                // Elasticsearch 조회 전에 RUNNING 이벤트를 송출해 UI에서 스피너 등을 활성화할 수 있도록 한다.
+                progressService.publishRunning(trackingContext.tenantId(), trackingContext.queryId(), 30.0d, null, "Elasticsearch 검색을 실행합니다.");
+            }
             SearchResult searchResult = searchRepository.search(criteria);
             Duration elapsed = Duration.ofNanos(sample.stop(searchLatencyTimer));
             trackSla(criteria, elapsed);
@@ -125,15 +149,34 @@ public class ResearchQueryService {
             ResearchQueryResponse response = mapToResponse(criteria, searchResult);
             if (cacheKey != null) {
                 try {
-                    cacheRepository.put(cacheKey, objectMapper.writeValueAsString(response));
+                    cacheRepository.put(cacheKey, objectMapper.writeValueAsString(stripQueryId(response)));
                 } catch (JsonProcessingException e) {
                     log.warn("검색 결과 캐시 저장에 실패했습니다. key={}", cacheKey, e);
                 }
+            }
+            if (trackingContext.enabled()) {
+                // 결과 건수와 함께 완료 이벤트를 발행한다.
+                progressService.publishCompleted(
+                        trackingContext.tenantId(),
+                        trackingContext.queryId(),
+                        searchResult.totalHits(),
+                        false,
+                        null
+                );
             }
             return response;
         } catch (RuntimeException ex) {
             Duration elapsed = Duration.ofNanos(sample.stop(searchLatencyTimer));
             trackSla(criteria, elapsed);
+            if (trackingContext.enabled()) {
+                // 실패 시에도 SSE 채널로 알림을 전송해 사용자 경험을 보장한다.
+                progressService.publishFailed(
+                        trackingContext.tenantId(),
+                        trackingContext.queryId(),
+                        "RESEARCH-SEARCH-ERROR",
+                        ex.getMessage()
+                );
+            }
             throw ex;
         }
     }
@@ -151,7 +194,7 @@ public class ResearchQueryService {
                                 .toList()
                 ));
 
-        return new ResearchQueryResponse(items, pagination, facets);
+        return new ResearchQueryResponse(criteria.getQueryId(), ResearchQueryStatus.COMPLETED, items, pagination, facets);
     }
 
     private ResearchSummaryResponse toSummary(ResearchDocument document) {
@@ -187,6 +230,38 @@ public class ResearchQueryService {
         if (elapsed.compareTo(properties.getSlaThreshold()) > 0) {
             slaViolationCounter.increment();
             log.debug("검색 SLA 초과. elapsed={}ms, criteria={}", elapsed.toMillis(), criteria);
+        }
+    }
+
+    /**
+     * 캐시에서 가져온 응답에 최신 queryId를 주입한다.
+     */
+    private ResearchQueryResponse attachQueryId(ResearchQueryResponse response, String queryId) {
+        if (!StringUtils.hasText(queryId)) {
+            return response;
+        }
+        return new ResearchQueryResponse(queryId, response.status(), response.items(), response.pagination(), response.facets());
+    }
+
+    /**
+     * 캐시에 저장할 때 queryId를 제거해 재사용성을 높인다.
+     */
+    private ResearchQueryResponse stripQueryId(ResearchQueryResponse response) {
+        return new ResearchQueryResponse(null, response.status(), response.items(), response.pagination(), response.facets());
+    }
+
+    /**
+     * 진행률 전파에 필요한 컨텍스트 보조 클래스.
+     */
+    private record TrackingContext(String tenantId, String queryId) {
+        private static TrackingContext from(ResearchQueryCriteria criteria) {
+            String normalizedTenant = StringUtils.hasText(criteria.getTenantId()) ? criteria.getTenantId().trim() : "default";
+            String normalizedQueryId = StringUtils.hasText(criteria.getQueryId()) ? criteria.getQueryId().trim() : null;
+            return new TrackingContext(normalizedTenant, normalizedQueryId);
+        }
+
+        private boolean enabled() {
+            return StringUtils.hasText(queryId);
         }
     }
 }

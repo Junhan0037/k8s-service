@@ -1,5 +1,6 @@
 package com.researchex.research.api;
 
+import com.researchex.contract.research.ResearchQueryStatus;
 import com.researchex.research.config.SearchProperties;
 import com.researchex.research.service.ResearchQueryService;
 import com.researchex.research.service.dto.PaginationMetadata;
@@ -39,7 +40,7 @@ class ResearchQueryControllerTest {
 
     @Test
     void search_parsesQueryAndSortsProperly() {
-        ResearchQueryResponse stubResponse = new ResearchQueryResponse(List.of(), PaginationMetadata.from(0, 20, 0), Map.of());
+        ResearchQueryResponse stubResponse = new ResearchQueryResponse("query-1", ResearchQueryStatus.COMPLETED, List.of(), PaginationMetadata.from(0, 20, 0), Map.of());
         when(researchQueryService.search(any())).thenReturn(stubResponse);
 
         ResponseEntity<ResearchQueryResponse> responseEntity = controller.search(
@@ -48,7 +49,9 @@ class ResearchQueryControllerTest {
                 50,
                 List.of("updatedAt:desc", "relevance:asc"),
                 List.of("phase:PHASE_1,PHASE_2", "status:RECRUITING"),
-                true
+                true,
+                "query-1",
+                "tenant-blue"
         );
 
         assertThat(responseEntity.getStatusCode().is2xxSuccessful()).isTrue();
@@ -63,14 +66,16 @@ class ResearchQueryControllerTest {
         assertThat(captured.getSize()).isEqualTo(50);
         assertThat(captured.getSorts()).hasSize(2);
         assertThat(captured.getFilters()).containsKeys("phase", "status");
+        assertThat(captured.getTenantId()).isEqualTo("tenant-blue");
+        assertThat(captured.getQueryId()).isEqualTo("query-1");
     }
 
     @Test
     void search_appliesDefaultPageSizeWhenMissing() {
-        ResearchQueryResponse stubResponse = new ResearchQueryResponse(List.of(), PaginationMetadata.from(0, 20, 0), Map.of());
+        ResearchQueryResponse stubResponse = new ResearchQueryResponse("query-2", ResearchQueryStatus.COMPLETED, List.of(), PaginationMetadata.from(0, 20, 0), Map.of());
         when(researchQueryService.search(any())).thenReturn(stubResponse);
 
-        controller.search("immune", 0, null, null, null, true);
+        controller.search("immune", 0, null, null, null, true, null, null);
 
         ArgumentCaptor<com.researchex.research.service.search.ResearchQueryCriteria> criteriaCaptor =
                 ArgumentCaptor.forClass(com.researchex.research.service.search.ResearchQueryCriteria.class);
@@ -78,5 +83,7 @@ class ResearchQueryControllerTest {
 
         com.researchex.research.service.search.ResearchQueryCriteria captured = criteriaCaptor.getValue();
         assertThat(captured.getSize()).isEqualTo(searchProperties.getDefaultPageSize());
+        assertThat(captured.getTenantId()).isEqualTo("default");
+        assertThat(captured.getQueryId()).isNotBlank();
     }
 }
