@@ -54,7 +54,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.springframework.security:spring-security-core")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${rootProject.extra["springBootVersion"]}")
+    kapt("org.springframework.boot:spring-boot-configuration-processor:${rootProject.extra["springBootVersion"]}")
 
     // 기본 단위 테스트를 위한 JUnit5 의존성을 등록해 두고 필요 시 확장한다.
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")

@@ -3,41 +3,6 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.2.5/748cf1d49e04e20db1784e88f676657cd030d937/spring-boot-configuration-processor-3.2.5.jar" />
-        </processorPath>
-        <module name="msa-researchex.platform.common-lib.main" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
-        </processorPath>
-        <module name="msa-researchex.gateway.main" />
-        <module name="msa-researchex.services.user-portal.main" />
-        <module name="msa-researchex.platform.common-lib.test" />
-        <module name="msa-researchex.services.registry-service.main" />
-        <module name="msa-researchex.platform.messaging-contracts.main" />
-        <module name="msa-researchex.services.mr-viewer-service.main" />
-        <module name="msa-researchex.platform.main" />
-        <module name="msa-researchex.platform.messaging-contracts.test" />
-        <module name="msa-researchex.services.research-service.test" />
-        <module name="msa-researchex.services.user-portal.test" />
-        <module name="msa-researchex.services.mr-viewer-service.test" />
-        <module name="msa-researchex.platform.test" />
-        <module name="msa-researchex.services.cdw-loader.test" />
-        <module name="msa-researchex.services.registry-service.test" />
-        <module name="msa-researchex.services.research-service.main" />
-        <module name="msa-researchex.services.deid-service.test" />
-        <module name="msa-researchex.services.main" />
-        <module name="msa-researchex.services.test" />
-        <module name="msa-researchex.services.deid-service.main" />
-        <module name="msa-researchex.gateway.test" />
-        <module name="msa-researchex.services.cdw-loader.main" />
-      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />
   </component>

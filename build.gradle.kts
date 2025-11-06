@@ -1,5 +1,6 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // 베이스 플러그인은 루트 프로젝트에서 아티팩트 생성을 방지하고 공통 태스크만 제공한다.
@@ -8,6 +9,10 @@ plugins {
     id("com.diffplug.spotless") version "6.25.0" apply false
     // Spring Dependency Management 플러그인은 BOM 기반 의존성 버전 관리를 돕는다.
     id("io.spring.dependency-management") version "1.1.4" apply false
+    // Kotlin JVM 및 Spring 플러그인을 사전에 등록해 서브프로젝트에서 재사용한다.
+    kotlin("jvm") version "1.9.23" apply false
+    kotlin("plugin.spring") version "1.9.23" apply false
+    kotlin("kapt") version "1.9.23" apply false
 }
 
 // 전체 프로젝트 수준에서 재사용할 버전 상수를 정의한다.
@@ -21,6 +26,9 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "checkstyle")
     apply(plugin = "com.diffplug.spotless")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "org.jetbrains.kotlin.kapt")
 
     // JDK 17을 표준으로 사용하여 일관된 빌드 환경을 유지한다.
     extensions.configure<JavaPluginExtension> {
@@ -38,6 +46,14 @@ subprojects {
             "-Xlint:unchecked",
             "-Xlint:deprecation"
         ))
+    }
+
+    // Kotlin 컴파일러도 동일한 JVM 타깃과 Null 안정성 전략을 사용하도록 설정한다.
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = "17"
+            freeCompilerArgs = freeCompilerArgs + listOf("-Xjsr305=strict")
+        }
     }
 
     // JUnit Platform을 기본 테스트 런타임으로 사용하여 최신 테스트 생태계를 따른다.
@@ -65,18 +81,21 @@ subprojects {
             trimTrailingWhitespace()
             endWithNewline()
         }
+        kotlin {
+            target("src/**/*.kt")
+            ktlint("0.50.0")
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
     }
 
     // 모든 모듈에서 일관된 그룹 및 버전을 유지하기 위한 기본 값이다.
     group = "com.researchex"
     version = "0.1.0-SNAPSHOT"
 
-    // Lombok 기반 애노테이션을 전역으로 제공해 게터/세터 등 보일러플레이트를 제거한다.
+    // 공통적으로 활용할 Kotlin 리플렉션 라이브러리를 기본 구현 의존성으로 추가한다.
     dependencies {
-        add("compileOnly", "org.projectlombok:lombok:1.18.32")
-        add("annotationProcessor", "org.projectlombok:lombok:1.18.32")
-        add("testCompileOnly", "org.projectlombok:lombok:1.18.32")
-        add("testAnnotationProcessor", "org.projectlombok:lombok:1.18.32")
+        add("implementation", "org.jetbrains.kotlin:kotlin-reflect")
     }
 }
 
