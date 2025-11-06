@@ -1,7 +1,7 @@
-## ResearchEx 구현 가이드 (Local + Minikube)
+## MSA-플랫폼 구현 (Local + Minikube)
 
 ### 1) 목표와 범위
-- 목표: ResearchEx(멀티테넌트 MSA 기반 임상 데이터 연구 플랫폼)를 로컬 환경에서 재현 가능한 수준으로 구현·검증하고, Minikube 기반 Kubernetes 환경까지 확장 학습한다.
+- 목표: MSA 기반 플랫폼을 로컬 환경에서 재현 가능한 수준으로 구현·검증하고, Minikube 기반 Kubernetes 환경까지 확장 학습한다.
 - 범위: 코어 마이크로서비스 6종, 이벤트 드리븐 기반 메시징, API Gateway, 인증/인가, 캐싱/세션, 관측성(로그·메트릭·트레이싱), 기본 데이터 계층을 로컬에서 구동한다. Minikube 상에서 동일 구성을 배포·운영하는 방법을 실습한다.
 - 비범위: 퍼블릭 클라우드 관리형 서비스(EKS/HPA 등), 수십만 동시 사용자 부하 테스트, 병원별 멀티 테넌트 운영 자동화. Kubernetes 오토스케일링/서비스 메시 등 고급 주제는 백로그로 분리한다.
 
@@ -84,9 +84,6 @@
 17. 테스트 전략
     - 계층별 테스트: 단위(JUnit5), 슬라이스(WebMvc, DataJpa), 컨테이너 테스트(Testcontainers로 Kafka/Redis/PG)
     - 컨슈머/프로듀서 계약 테스트(컨트랙트 테스트 또는 Schema 호환성 체크)
-18. 개발자 경험(DX)
-    - `Makefile` 또는 Gradle Task: `make up`, `make down`, `make seed`, `make test`
-    - 샘플 환경변수 `.env.example`, 로컬 프로파일 `application-local.yml`
 
 ### 5) 서비스별 최소 기능(MVP)
 - Research Service
@@ -124,20 +121,20 @@
 
 ### 8) 체크리스트 & 완료 기준(DoD)
 - 기능
-  - [ ] 6개 서비스 기동 및 헬스 체크 통과
-  - [ ] 게이트웨이 라우팅/인증/내부 시크릿 보호 동작
-  - [ ] Kafka 비동기 파이프라인 E2E 처리 성공
-  - [ ] Redis 캐시/세션 동작 및 캐시 히트율 지표 노출
-  - [ ] (선택) Minikube 환경에서 핵심 서비스 1~2종 배포 및 Ingress 라우팅 확인
+  - [x] 6개 서비스 기동 및 헬스 체크 통과
+  - [x] 게이트웨이 라우팅/인증/내부 시크릿 보호 동작
+  - [x] Kafka 비동기 파이프라인 E2E 처리 성공
+  - [x] Redis 캐시/세션 동작 및 캐시 히트율 지표 노출
+  - [x] (선택) Minikube 환경에서 핵심 서비스 1~2종 배포 및 Ingress 라우팅 확인
 - 비기능
-  - [ ] 요청당 TraceId 전파 및 Zipkin 트레이스 확인
-  - [ ] Prometheus 노출 지표 수집 및 Grafana 대시보드 시현
-  - [ ] Resilience4j 설정(CB/Retry/RateLimiter) 유효성 확인
-  - [ ] 멱등성/중복처리 방지 통과(동일 키 재시도 테스트)
-  - [ ] (선택) Kubernetes 리소스(HPA/StatefulSet) 배포 시 리소스 요청/제한 설정 검증
+  - [x] 요청당 TraceId 전파 및 Zipkin 트레이스 확인
+  - [x] Prometheus 노출 지표 수집 및 Grafana 대시보드 시현
+  - [x] Resilience4j 설정(CB/Retry/RateLimiter) 유효성 확인
+  - [x] 멱등성/중복처리 방지 통과(동일 키 재시도 테스트)
+  - [x] Kubernetes 리소스(HPA/StatefulSet) 배포 시 리소스 요청/제한 설정 검증
 - 테스트/품질
-  - [ ] 핵심 유스케이스 단위/슬라이스/컨테이너 테스트 통과
-  - [ ] 컨슈머/프로듀서 계약 또는 스키마 호환성 검증 통과
+  - [x] 핵심 유스케이스 단위/슬라이스/컨테이너 테스트 통과
+  - [x] 컨슈머/프로듀서 계약 또는 스키마 호환성 검증 통과
 
 ### 9) 백로그(고도화 항목)
 - gRPC 전환 대비 Gateway 인터페이스 확장
