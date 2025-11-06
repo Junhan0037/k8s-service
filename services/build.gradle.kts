@@ -14,6 +14,9 @@ subprojects {
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
 
+    val testcontainersVersion: String by rootProject.extra
+    val awaitilityVersion: String by rootProject.extra
+
     extensions.configure<DependencyManagementExtension> {
         imports {
             mavenBom("org.springframework.cloud:spring-cloud-dependencies:2023.0.1")
@@ -29,6 +32,12 @@ subprojects {
         implementation("org.springframework.boot:spring-boot-starter-web")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.springframework.kafka:spring-kafka-test")
+        testImplementation("org.testcontainers:junit-jupiter:$testcontainersVersion")
+        testImplementation("org.testcontainers:kafka:$testcontainersVersion")
+        testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
+        testImplementation("org.testcontainers:redis:$testcontainersVersion")
+        testImplementation("org.awaitility:awaitility:$awaitilityVersion")
     }
 
     tasks.named<BootJar>("bootJar") {

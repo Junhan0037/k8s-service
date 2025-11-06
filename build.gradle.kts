@@ -13,6 +13,8 @@ plugins {
 // 전체 프로젝트 수준에서 재사용할 버전 상수를 정의한다.
 extra["springBootVersion"] = "3.2.5"
 extra["resilience4jVersion"] = "2.2.0"
+extra["testcontainersVersion"] = "1.19.7"
+extra["awaitilityVersion"] = "4.2.0"
 
 subprojects {
     // 모든 서브 프로젝트에 공통으로 적용되는 플러그인을 선언한다.

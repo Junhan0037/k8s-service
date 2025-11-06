@@ -61,4 +61,5 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     testImplementation("org.springframework.boot:spring-boot-test")
     testImplementation("org.assertj:assertj-core:3.25.3")
+    testImplementation(project(":platform:messaging-contracts"))
 }

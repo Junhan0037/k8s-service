@@ -86,22 +86,14 @@ public class AvroMessageConverter {
 
   /**
    * 역직렬화된 레코드가 스키마 제약을 준수하는지 검증한다.
-   *
-   * @param record 검증 대상 Avro SpecificRecord
    */
   public void validateRecord(SpecificRecord record) {
     Schema schema = record.getSchema();
-    SpecificData specificData = record instanceof SpecificRecordBase specificRecordBase
-        ? specificRecordBase.getSpecificData()
-        : SpecificData.get();
+    SpecificData specificData = record instanceof SpecificRecordBase specificRecordBase ? specificRecordBase.getSpecificData() : SpecificData.get();
     for (Schema.Field field : schema.getFields()) {
       Object value = record.get(field.pos());
       if (!specificData.validate(field.schema(), value)) {
-        throw new AvroSerializationException(
-            "Avro 레코드가 스키마 제약을 만족하지 않습니다. field="
-                + field.name()
-                + ", value="
-                + value);
+        throw new AvroSerializationException("Avro 레코드가 스키마 제약을 만족하지 않습니다. field=" + field.name() + ", value=" + value);
       }
     }
   }

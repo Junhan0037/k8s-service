@@ -19,7 +19,6 @@ import java.util.concurrent.Executor;
 
 /**
  * CDW 적재 파이프라인을 비동기적으로 실행한다.
- *
  * 검증과 저장 단계를 분리하여 CPU/I/O 부하를 분산 처리하고, 각 단계 완료 시 Kafka로 이벤트를 게시한다.
  */
 @Service
@@ -48,9 +47,6 @@ public class CdwLoadPipelineService {
 
   /**
    * 배치 적재 파이프라인을 실행한다.
-   *
-   * @param request 적재 요청 파라미터
-   * @return 전체 파이프라인 완료를 나타내는 CompletableFuture
    */
   public CompletableFuture<Void> startPipeline(CdwBatchRequest request) {
     Assert.hasText(topicProperties.getCdwLoadEvents(), "CDW 적재 이벤트 토픽이 설정되어야 합니다.");
@@ -59,20 +55,12 @@ public class CdwLoadPipelineService {
     return publishStage(context, CdwLoadStage.RECEIVED, context.recordCount, null, null)
         .thenCompose(ignored -> validateAsync(context))
         .thenCompose(this::persistAsync)
-        .thenCompose(
-            persistedContext ->
-                publishStage(
-                    persistedContext,
-                    CdwLoadStage.PERSISTED,
-                    persistedContext.recordCount,
-                    null,
-                    null))
+        .thenCompose(persistedContext -> publishStage(persistedContext, CdwLoadStage.PERSISTED, persistedContext.recordCount, null, null))
         .exceptionallyCompose(throwable -> onFailure(context, throwable));
   }
 
   private CompletableFuture<PipelineContext> validateAsync(PipelineContext context) {
-    return CompletableFuture.supplyAsync(
-            () -> {
+    return CompletableFuture.supplyAsync(() -> {
               log.info("CDW 배치 유효성 검사를 시작합니다. tenantId={}, batchId={}", context.tenantId, context.batchId);
               if (context.recordCount <= 0) {
                 throw new IllegalArgumentException("recordCount는 0보다 커야 합니다.");
@@ -81,24 +69,21 @@ public class CdwLoadPipelineService {
                 throw new IllegalArgumentException("recordCount가 최대 허용치(5,000,000)를 초과했습니다.");
               }
               return context;
-            },
-            cdwLoaderCpuExecutor)
-        .thenCompose(
-            validContext ->
-                publishStage(
-                        validContext, CdwLoadStage.VALIDATED, validContext.recordCount, null, null)
-                    .thenApply(ignored -> validContext));
+            }, cdwLoaderCpuExecutor)
+        .thenCompose(validContext -> publishStage(validContext, CdwLoadStage.VALIDATED, validContext.recordCount, null, null)
+                .thenApply(ignored -> validContext)
+        );
   }
 
   private CompletableFuture<PipelineContext> persistAsync(PipelineContext context) {
-    return CompletableFuture.supplyAsync(
-        () -> {
+    return CompletableFuture.supplyAsync(() -> {
           log.info("CDW 배치를 영속화합니다. tenantId={}, batchId={}", context.tenantId, context.batchId);
+
           // 실제 구현에서는 데이터베이스/오브젝트 스토리지에 저장한다.
           simulateIoLatency();
+
           return context;
-        },
-        cdwLoaderIoExecutor);
+        }, cdwLoaderIoExecutor);
   }
 
   private void simulateIoLatency() {
@@ -109,14 +94,8 @@ public class CdwLoadPipelineService {
     }
   }
 
-  private CompletableFuture<Void> publishStage(
-      PipelineContext context,
-      CdwLoadStage stage,
-      long recordCount,
-      String errorCode,
-      String errorMessage) {
-    CdwLoadEvent event =
-        CdwLoadEvent.newBuilder()
+  private CompletableFuture<Void> publishStage(PipelineContext context, CdwLoadStage stage, long recordCount, String errorCode, String errorMessage) {
+    CdwLoadEvent event = CdwLoadEvent.newBuilder()
             .setEventId(context.eventId)
             .setOccurredAt(Instant.now())
             .setTenantId(context.tenantId)
@@ -135,8 +114,7 @@ public class CdwLoadPipelineService {
     log.info("CDW 적재 이벤트를 게시합니다. topic={}, key={}, stage={}", topic, key, stage);
     return kafkaTemplate
         .send(topic, key, payload)
-        .thenAccept(
-            sendResult -> {
+        .thenAccept(sendResult -> {
               if (sendResult.getRecordMetadata() != null) {
                 log.debug("CDW 적재 이벤트 게시 완료. topic={}, partition={}, offset={}", sendResult.getRecordMetadata().topic(), sendResult.getRecordMetadata().partition(), sendResult.getRecordMetadata().offset());
               }
@@ -158,8 +136,7 @@ public class CdwLoadPipelineService {
     private final long recordCount;
     private final String eventId;
 
-    private PipelineContext(
-        String tenantId, String batchId, String sourceSystem, long recordCount, String eventId) {
+    private PipelineContext(String tenantId, String batchId, String sourceSystem, long recordCount, String eventId) {
       this.tenantId = Objects.requireNonNull(tenantId, "tenantId는 null일 수 없습니다.");
       this.batchId = Objects.requireNonNull(batchId, "batchId는 null일 수 없습니다.");
       this.sourceSystem = Objects.requireNonNull(sourceSystem, "sourceSystem은 null일 수 없습니다.");
