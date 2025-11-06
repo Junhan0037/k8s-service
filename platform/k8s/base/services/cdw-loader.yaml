@@ -10,8 +10,8 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 8080  # 게이트웨이가 일관된 8080 포트로 접근하도록 유지한다.
+      targetPort: http
   selector:
     app.kubernetes.io/name: cdw-loader
 ---
@@ -37,7 +37,8 @@ spec:
           image: researchex/cdw-loader:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8106  # Spring Boot server.port(8106)과 동일하게 노출한다.
           envFrom:
             - configMapRef:
                 name: researchex-common-config
@@ -46,13 +47,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
+              port: http
             initialDelaySeconds: 15
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: http
             initialDelaySeconds: 30
             periodSeconds: 15
           resources:

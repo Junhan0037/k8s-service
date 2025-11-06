@@ -10,8 +10,8 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 8080  # 게이트웨이 라우팅 일관성을 위해 Service 포트는 8080을 유지한다.
+      targetPort: http
   selector:
     app.kubernetes.io/name: mr-viewer-service
 ---
@@ -37,7 +37,8 @@ spec:
           image: researchex/mr-viewer-service:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8103  # Spring Boot server.port(8103)에 맞춘다.
           envFrom:
             - configMapRef:
                 name: researchex-common-config
@@ -46,13 +47,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
+              port: http
             initialDelaySeconds: 10
             periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: http
             initialDelaySeconds: 20
             periodSeconds: 10
           resources:

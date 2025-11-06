@@ -10,8 +10,8 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 8080  # 게이트웨이 라우팅 일관성을 위해 Service 포트는 8080을 사용한다.
+      targetPort: http
   selector:
     app.kubernetes.io/name: registry-service
 ---
@@ -37,7 +37,8 @@ spec:
           image: researchex/registry-service:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8102  # Spring Boot server.port(8102)와 일치시킨다.
           envFrom:
             - configMapRef:
                 name: researchex-common-config
@@ -46,13 +47,13 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
+              port: http
             initialDelaySeconds: 10
             periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: http
             initialDelaySeconds: 20
             periodSeconds: 10
           resources:

@@ -40,4 +40,5 @@ subprojects {
         // Spring Boot 앱은 일반 Jar를 배포하지 않으므로 기본 Jar 생성을 비활성화한다.
         enabled = false
     }
+
 }

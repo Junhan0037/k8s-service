@@ -19,8 +19,9 @@
 
 ## 사용 방법
 1. Minikube를 `study.md` 가이드에 따라 기동합니다.
-2. `kubectl apply -k platform/k8s/overlays/minikube` 명령으로 전체 스택을 배포합니다.
-3. 배포 후 `kubectl get pods -n research-ex`로 정상 기동 여부를 확인합니다.
+2. `scripts/build-and-load-images.sh` 스크립트를 실행해 Spring Boot 서비스 이미지를 빌드하고 Minikube 노드로 푸시합니다.
+3. `kubectl apply -k platform/k8s/overlays/minikube` 명령으로 전체 스택을 배포합니다.
+4. 배포 후 `kubectl get pods -n research-ex`로 정상 기동 여부를 확인합니다.
 
 ## 향후 확장
 - 퍼블릭 클라우드 배포 시에는 별도의 오버레이 디렉터리를 추가해 노드풀, 스토리지 클래스를 구분합니다.

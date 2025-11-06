@@ -1,0 +1,10 @@
+{
+  "eventId": "3f8b3570-5695-4a17-95f7-5d0f4faf1234",
+  "occurredAt": 1709277600000,
+  "tenantId": "tenant-blue",
+  "jobId": "job-aml-20240301-001",
+  "stage": "COMPLETED",
+  "payloadLocation": "s3://deid/tenant-blue/job-aml-20240301-001/output.ndjson",
+  "errorCode": null,
+  "errorMessage": null
+}

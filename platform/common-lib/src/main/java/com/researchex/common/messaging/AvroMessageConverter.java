@@ -1,13 +1,13 @@
 package com.researchex.common.messaging;
 
 import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericData;
 import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificDatumWriter;
+import org.apache.avro.specific.SpecificData;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.slf4j.Logger;
@@ -91,8 +91,18 @@ public class AvroMessageConverter {
    */
   public void validateRecord(SpecificRecord record) {
     Schema schema = record.getSchema();
-    if (!GenericData.get().validate(schema, record)) {
-      throw new AvroSerializationException("Avro 레코드가 스키마 제약을 만족하지 않습니다.");
+    SpecificData specificData = record instanceof SpecificRecordBase specificRecordBase
+        ? specificRecordBase.getSpecificData()
+        : SpecificData.get();
+    for (Schema.Field field : schema.getFields()) {
+      Object value = record.get(field.pos());
+      if (!specificData.validate(field.schema(), value)) {
+        throw new AvroSerializationException(
+            "Avro 레코드가 스키마 제약을 만족하지 않습니다. field="
+                + field.name()
+                + ", value="
+                + value);
+      }
     }
   }
 }

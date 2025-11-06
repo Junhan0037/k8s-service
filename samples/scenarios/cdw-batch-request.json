@@ -1,0 +1,6 @@
+{
+  "tenantId": "tenant-blue",
+  "batchId": "batch-aml-20240301",
+  "sourceSystem": "ehr.snapshot",
+  "recordCount": 1250
+}

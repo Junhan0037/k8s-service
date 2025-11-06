@@ -1,0 +1,13 @@
+{
+  "tenantId": "tenant-blue",
+  "query": "AML",
+  "filters": [
+    "status:ENROLLING"
+  ],
+  "sort": [
+    "updatedAt:desc"
+  ],
+  "page": 0,
+  "size": 5,
+  "useCache": true
+}
