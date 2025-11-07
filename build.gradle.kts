@@ -23,7 +23,6 @@ extra["awaitilityVersion"] = "4.2.0"
 
 subprojects {
     // 모든 서브 프로젝트에 공통으로 적용되는 플러그인을 선언한다.
-    apply(plugin = "java-library")
     apply(plugin = "checkstyle")
     apply(plugin = "com.diffplug.spotless")
     apply(plugin = "org.jetbrains.kotlin.jvm")

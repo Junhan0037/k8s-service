@@ -36,7 +36,6 @@ subprojects {
         testImplementation("org.testcontainers:junit-jupiter:$testcontainersVersion")
         testImplementation("org.testcontainers:kafka:$testcontainersVersion")
         testImplementation("org.testcontainers:postgresql:$testcontainersVersion")
-        testImplementation("org.testcontainers:redis:$testcontainersVersion")
         testImplementation("org.awaitility:awaitility:$awaitilityVersion")
     }
 

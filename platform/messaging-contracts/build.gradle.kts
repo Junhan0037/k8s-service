@@ -1,4 +1,6 @@
 plugins {
+    // Avro 생성 산출물을 라이브러리 형태로 배포하므로 Java Library 플러그인을 적용한다.
+    `java-library`
     // Avro 기반 스키마를 자바 클래스로 변환하기 위해 전용 플러그인을 적용한다.
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
 }
