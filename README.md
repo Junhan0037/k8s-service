@@ -2,6 +2,8 @@
 
 MSA 기반 플랫폼의 로컬·쿠버네티스 학습용 구현체입니다. `study.md`에서 정의한 목표에 따라 6개의 마이크로서비스, Spring Cloud Gateway, Kafka/Redis/PostgreSQL/Elasticsearch, 관측성 스택까지 한 번에 재현할 수 있도록 구성했습니다.
 
+![project.png](./images/project.png)
+
 ## 주요 디렉터리
 - `gateway/` : Spring Cloud Gateway 기반 API 게이트웨이. JWT 검증과 `X-Trace-Id` 전파를 담당합니다.
 - `services/` : 6개 코어 서비스(`research`, `registry`, `mr-viewer`, `deid`, `user-portal`, `cdw-loader`)의 Spring Boot 애플리케이션이 위치합니다.
